@@ -29,6 +29,7 @@ import org.eclipse.sirius.components.core.api.IObjectService;
 import org.eclipse.sirius.components.diagrams.tools.ITool;
 import org.eclipse.sirius.components.diagrams.tools.Palette;
 import org.eclipse.sirius.components.diagrams.tools.SingleClickOnDiagramElementTool;
+import org.eclipse.sirius.components.diagrams.tools.SingleClickOnGroupTool;
 import org.eclipse.sirius.components.diagrams.tools.SingleClickOnTwoDiagramElementsCandidate;
 import org.eclipse.sirius.components.diagrams.tools.SingleClickOnTwoDiagramElementsTool;
 import org.eclipse.sirius.components.diagrams.tools.ToolSection;
@@ -38,6 +39,7 @@ import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.NodeToolSection;
@@ -83,15 +85,21 @@ public class ToolConverter {
         var allPalettes = new ArrayList<Palette>();
         var toolFinder = new ToolFinder();
 
+        List<ITool> diagramTools = new ArrayList<>();
+        diagramTools.addAll(toolFinder.findNodeTools(viewDiagramDescription).stream()
+                .map(nodeTool -> this.createNodeTool(nodeTool, converterContext, true))
+                .toList());
+        diagramTools.addAll(toolFinder.findGroupTools(viewDiagramDescription).stream()
+                .map(groupTool -> this.createGroupTool(groupTool, converterContext, false))
+                .toList());
+
         // Palette for the diagram itself
         String diagramPaletteId = "siriusComponents://diagramPalette?diagramId=" + this.objectService.getId(viewDiagramDescription);
         var diagramPalette = Palette.newPalette(diagramPaletteId)
                 .toolSections(toolFinder.findToolSections(viewDiagramDescription).stream()
                         .map(toolSection -> this.createToolSection(toolSection, converterContext))
                         .toList())
-                .tools(toolFinder.findNodeTools(viewDiagramDescription).stream()
-                        .map(nodeTool -> this.createNodeTool(nodeTool, converterContext, true))
-                        .toList())
+                .tools(diagramTools)
                 .build();
 
         allPalettes.add(diagramPalette);
@@ -182,6 +190,23 @@ public class ToolConverter {
                 })
                 .targetDescriptions(List.of())
                 .selectionDescriptionId(this.objectService.getId(nodeTool.getSelectionDescription()))
+                .appliesToDiagramRoot(appliesToDiagramRoot)
+                .build();
+    }
+
+    private ITool createGroupTool(GroupTool groupTool, ViewDiagramDescriptionConverterContext converterContext, boolean appliesToDiagramRoot) {
+        var convertedNodes = Collections.unmodifiableMap(converterContext.getConvertedNodes());
+        String toolId = this.idProvider.apply(groupTool).toString();
+        return SingleClickOnGroupTool.newSingleClickOnGroupTool(toolId)
+                .label(groupTool.getName())
+                .iconURL(this.toolIconURLProvider(groupTool.getIconURLsExpression(), ViewToolImageProvider.NODE_CREATION_TOOL_ICON, converterContext.getInterpreter()))
+                .handler(variableManager -> {
+                    VariableManager child = variableManager.createChild();
+                    child.put(CONVERTED_NODES_VARIABLE, convertedNodes);
+                    return this.execute(converterContext, convertedNodes, groupTool, child);
+                })
+                .targetDescriptions(List.of())
+                .selectionDescriptionId(this.objectService.getId(groupTool.getSelectionDescription()))
                 .appliesToDiagramRoot(appliesToDiagramRoot)
                 .build();
     }

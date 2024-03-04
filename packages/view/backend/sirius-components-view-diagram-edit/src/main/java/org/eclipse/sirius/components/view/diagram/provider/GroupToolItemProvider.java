@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2021, 2023 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
- *******************************************************************************/
+ */
 package org.eclipse.sirius.components.view.diagram.provider;
 
 import java.util.Collection;
@@ -17,35 +17,28 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.edit.provider.IChildCreationExtender;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
-import org.eclipse.emf.edit.provider.ItemProviderAdapter;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.sirius.components.view.diagram.DiagramFactory;
 import org.eclipse.sirius.components.view.diagram.DiagramPackage;
-import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.sirius.components.view.diagram.DiagramPalette} object.
- * <!-- begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.sirius.components.view.diagram.GroupTool} object. <!--
+ * begin-user-doc --> <!-- end-user-doc -->
  *
  * @generated
  */
-public class DiagramPaletteItemProvider extends ItemProviderAdapter
-        implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class GroupToolItemProvider extends ToolItemProvider {
     /**
      * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    public DiagramPaletteItemProvider(AdapterFactory adapterFactory) {
+    public GroupToolItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -59,8 +52,21 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
         if (this.itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
+            this.addIconURLsExpressionPropertyDescriptor(object);
         }
         return this.itemPropertyDescriptors;
+    }
+
+    /**
+     * This adds a property descriptor for the Icon UR Ls Expression feature. <!-- begin-user-doc --> <!-- end-user-doc
+     * -->
+     *
+     * @generated
+     */
+    protected void addIconURLsExpressionPropertyDescriptor(Object object) {
+        this.itemPropertyDescriptors.add(this.createItemPropertyDescriptor(((ComposeableAdapterFactory) this.adapterFactory).getRootAdapterFactory(), this.getResourceLocator(),
+                this.getString("_UI_GroupTool_iconURLsExpression_feature"), this.getString("_UI_PropertyDescriptor_description", "_UI_GroupTool_iconURLsExpression_feature", "_UI_GroupTool_type"),
+                DiagramPackage.Literals.GROUP_TOOL__ICON_UR_LS_EXPRESSION, true, false, false, ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
     }
 
     /**
@@ -75,11 +81,7 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
     public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
         if (this.childrenFeatures == null) {
             super.getChildrenFeatures(object);
-            this.childrenFeatures.add(DiagramPackage.Literals.DIAGRAM_PALETTE__DROP_TOOL);
-            this.childrenFeatures.add(DiagramPackage.Literals.DIAGRAM_PALETTE__DROP_NODE_TOOL);
-            this.childrenFeatures.add(DiagramPackage.Literals.DIAGRAM_PALETTE__NODE_TOOLS);
-            this.childrenFeatures.add(DiagramPackage.Literals.DIAGRAM_PALETTE__TOOL_SECTIONS);
-            this.childrenFeatures.add(DiagramPackage.Literals.DIAGRAM_PALETTE__GROUP_TOOLS);
+            this.childrenFeatures.add(DiagramPackage.Literals.GROUP_TOOL__SELECTION_DESCRIPTION);
         }
         return this.childrenFeatures;
     }
@@ -98,13 +100,13 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
     }
 
     /**
-     * This returns DiagramPalette.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * This returns GroupTool.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
-     * @generated NOT
+     * @generated
      */
     @Override
     public Object getImage(Object object) {
-        return this.overlayImage(object, this.getResourceLocator().getImage("full/obj16/DiagramPalette.svg"));
+        return this.overlayImage(object, this.getResourceLocator().getImage("full/obj16/GroupTool"));
     }
 
     /**
@@ -124,7 +126,8 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
      */
     @Override
     public String getText(Object object) {
-        return this.getString("_UI_DiagramPalette_type");
+        String label = ((GroupTool) object).getName();
+        return label == null || label.length() == 0 ? this.getString("_UI_GroupTool_type") : this.getString("_UI_GroupTool_type") + " " + label;
     }
 
     /**
@@ -138,12 +141,11 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
     public void notifyChanged(Notification notification) {
         this.updateChildren(notification);
 
-        switch (notification.getFeatureID(DiagramPalette.class)) {
-            case DiagramPackage.DIAGRAM_PALETTE__DROP_TOOL:
-            case DiagramPackage.DIAGRAM_PALETTE__DROP_NODE_TOOL:
-            case DiagramPackage.DIAGRAM_PALETTE__NODE_TOOLS:
-            case DiagramPackage.DIAGRAM_PALETTE__TOOL_SECTIONS:
-            case DiagramPackage.DIAGRAM_PALETTE__GROUP_TOOLS:
+        switch (notification.getFeatureID(GroupTool.class)) {
+            case DiagramPackage.GROUP_TOOL__ICON_UR_LS_EXPRESSION:
+                this.fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+                return;
+            case DiagramPackage.GROUP_TOOL__SELECTION_DESCRIPTION:
                 this.fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
@@ -160,25 +162,7 @@ public class DiagramPaletteItemProvider extends ItemProviderAdapter
     protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
 
-        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.DIAGRAM_PALETTE__DROP_TOOL, DiagramFactory.eINSTANCE.createDropTool()));
-
-        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.DIAGRAM_PALETTE__DROP_NODE_TOOL, DiagramFactory.eINSTANCE.createDropNodeTool()));
-
-        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.DIAGRAM_PALETTE__NODE_TOOLS, DiagramFactory.eINSTANCE.createNodeTool()));
-
-        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.DIAGRAM_PALETTE__TOOL_SECTIONS, DiagramFactory.eINSTANCE.createDiagramToolSection()));
-
-        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.DIAGRAM_PALETTE__GROUP_TOOLS, DiagramFactory.eINSTANCE.createGroupTool()));
-    }
-
-    /**
-     * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public ResourceLocator getResourceLocator() {
-        return ((IChildCreationExtender) this.adapterFactory).getResourceLocator();
+        newChildDescriptors.add(this.createChildParameter(DiagramPackage.Literals.GROUP_TOOL__SELECTION_DESCRIPTION, DiagramFactory.eINSTANCE.createSelectionDescription()));
     }
 
 }

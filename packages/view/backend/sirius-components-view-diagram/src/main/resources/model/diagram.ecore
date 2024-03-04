@@ -181,6 +181,8 @@
         eType="#//NodeTool" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="toolSections" upperBound="-1"
         eType="#//DiagramToolSection" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="groupTools" upperBound="-1"
+        eType="#//GroupTool" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="NodePalette">
     <eStructuralFeatures xsi:type="ecore:EReference" name="deleteTool" eType="#//DeleteTool"
@@ -284,5 +286,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="DropNodeTool" eSuperTypes="#//Tool">
     <eStructuralFeatures xsi:type="ecore:EReference" name="acceptedNodeTypes" upperBound="-1"
         eType="#//NodeDescription"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GroupTool" eSuperTypes="#//Tool">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="selectionDescription" eType="#//SelectionDescription"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iconURLsExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
   </eClassifiers>
 </ecore:EPackage>

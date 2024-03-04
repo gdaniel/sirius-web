@@ -278,6 +278,13 @@ type SingleClickOnTwoDiagramElementsCandidate {
   targets: [NodeDescription!]!
 }
 
+type SingleClickOnGroupTool implements Tool {
+	id: ID!
+	label: String!
+	iconURL: [String!]!
+	selectionDescriptionId: String
+}
+
 type DiagramDescription implements RepresentationDescription {
   id: ID!
   label: String!
@@ -286,6 +293,7 @@ type DiagramDescription implements RepresentationDescription {
   childNodeDescriptionIds: [ID!]!
   edgeDescriptions: [EdgeDescription!]!
   palette(diagramElementId: ID!): Palette!
+  groupPalette(diagramElementIds: [ID!]!): Palette!
   connectorTools(sourceDiagramElementId: ID!, targetDiagramElementId: ID!): [Tool!]!
   dropNodeCompatibility: [DropNodeCompatibilityEntry!]!
   initialDirectEditElementLabel(labelId: ID!): String!
@@ -330,6 +338,7 @@ extend type Mutation {
   editLabel(input: EditLabelInput!): EditLabelPayload!
   invokeSingleClickOnDiagramElementTool(input: InvokeSingleClickOnDiagramElementToolInput!): InvokeSingleClickOnDiagramElementToolPayload!
   invokeSingleClickOnTwoDiagramElementsTool(input: InvokeSingleClickOnTwoDiagramElementsToolInput!): InvokeSingleClickOnTwoDiagramElementsToolPayload!
+  invokeSingleClickOnGroupTool(input: InvokeSingleClickOnGroupToolInput!): InvokeSingleClickOnGroupToolPayload!
   updateNodeBounds(input: UpdateNodeBoundsInput!): UpdateNodeBoundsPayload!
   updateNodePosition(input: UpdateNodePositionInput!): UpdateNodePositionPayload!
   dropOnDiagram(input: DropOnDiagramInput!): DropOnDiagramPayload!
@@ -433,6 +442,15 @@ input InvokeSingleClickOnDiagramElementToolInput {
   toolId: ID!
 }
 
+input InvokeSingleClickOnGroupToolInput {
+	id: ID!
+	editingContextId: ID!
+	representationId: ID!
+	selectedObjectIds: [String]
+	diagramElementIds: [String!]!
+	toolId: ID!
+}
+
 union InvokeSingleClickOnDiagramElementToolPayload =
   ErrorPayload
   | InvokeSingleClickOnDiagramElementToolSuccessPayload
@@ -441,6 +459,16 @@ type InvokeSingleClickOnDiagramElementToolSuccessPayload {
   id: ID!
   newSelection: WorkbenchSelection
   messages: [Message]!
+}
+
+union InvokeSingleClickOnGroupToolPayload = 
+  ErrorPayload
+  | InvokeSingleClickOnGroupToolSuccessPayload
+  
+ type InvokeSingleClickOnGroupToolSuccessPayload {
+   id: ID!
+   newSelection: WorkbenchSelection
+   messages: [Message]!
 }
 
 input UpdateNodeBoundsInput {

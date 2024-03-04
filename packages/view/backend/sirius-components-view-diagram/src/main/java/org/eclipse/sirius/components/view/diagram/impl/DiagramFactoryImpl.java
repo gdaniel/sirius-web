@@ -37,6 +37,7 @@ import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
 import org.eclipse.sirius.components.view.diagram.FreeFormLayoutStrategyDescription;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.IconLabelNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.ImageNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.LabelEditTool;
@@ -150,6 +151,8 @@ public class DiagramFactoryImpl extends EFactoryImpl implements DiagramFactory {
                 return this.createEdgeToolSection();
             case DiagramPackage.DROP_NODE_TOOL:
                 return this.createDropNodeTool();
+            case DiagramPackage.GROUP_TOOL:
+                return this.createGroupTool();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -507,6 +510,17 @@ public class DiagramFactoryImpl extends EFactoryImpl implements DiagramFactory {
     public DropNodeTool createDropNodeTool() {
         DropNodeToolImpl dropNodeTool = new DropNodeToolImpl();
         return dropNodeTool;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
+    public GroupTool createGroupTool() {
+        GroupToolImpl groupTool = new GroupToolImpl();
+        return groupTool;
     }
 
     /**

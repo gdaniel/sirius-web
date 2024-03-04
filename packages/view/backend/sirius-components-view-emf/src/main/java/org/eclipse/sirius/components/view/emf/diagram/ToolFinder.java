@@ -31,6 +31,7 @@ import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.LabelEditTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
@@ -104,6 +105,13 @@ public class ToolFinder {
 
     public List<EdgeTool> findEdgeTools(NodeDescription nodeDescription) {
         return Optional.ofNullable(nodeDescription).map(NodeDescription::getPalette).map(NodePalette::getEdgeTools).orElse(new BasicEList<>());
+    }
+
+    public List<GroupTool> findGroupTools(DiagramDescription diagramDescription) {
+        return Optional.ofNullable(diagramDescription)
+                .map(DiagramDescription::getPalette)
+                .map(DiagramPalette::getGroupTools)
+                .orElse(new BasicEList<>());
     }
 
     public List<DiagramToolSection> findToolSections(DiagramDescription diagramDescription) {

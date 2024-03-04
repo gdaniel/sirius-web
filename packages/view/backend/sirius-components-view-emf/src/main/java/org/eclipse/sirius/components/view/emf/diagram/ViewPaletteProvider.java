@@ -28,6 +28,7 @@ import org.eclipse.sirius.components.collaborative.diagrams.api.IPaletteProvider
 import org.eclipse.sirius.components.collaborative.diagrams.dto.ITool;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.Palette;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.SingleClickOnDiagramElementTool;
+import org.eclipse.sirius.components.collaborative.diagrams.dto.SingleClickOnGroupTool;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.SingleClickOnTwoDiagramElementsCandidate;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.SingleClickOnTwoDiagramElementsTool;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.ToolSection;
@@ -52,6 +53,7 @@ import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.diagram.Tool;
@@ -140,6 +142,12 @@ public class ViewPaletteProvider implements IPaletteProvider {
             } else if (diagramElement instanceof Edge && diagramElementDescription instanceof EdgeDescription edgeDescription) {
                 variableManager.put(Edge.SELECTED_EDGE, diagramElement);
                 palette = this.getEdgePalette(editingContext, edgeDescription, this.createExtraToolSections(diagramElementDescription, diagramElement), variableManager, interpreter);
+            // [FOR] Are the descriptions used here?
+            } else if (targetElement instanceof List && diagramElement instanceof List && diagramElementDescription instanceof List diagramElementDescriptions) {
+                // Group palette
+                variableManager.put("selectedElements", targetElement);
+                variableManager.put("selectedViews", diagramElement);
+                palette = this.getGroupPalette(editingContext, diagramDescription, viewDiagramDescription, diagramElementDescriptions, this.createExtraToolSections(diagramElementDescription, diagramElement), variableManager, interpreter);
             }
         }
         return palette;
@@ -181,6 +189,24 @@ public class ViewPaletteProvider implements IPaletteProvider {
 
     private ITool createNodeTool(NodeTool viewNodeTool, VariableManager variableManager, AQLInterpreter interpreter) {
         return this.createNodeTool(viewNodeTool, false, variableManager, interpreter);
+    }
+
+    private ITool createGroupTool(GroupTool viewGroupTool, VariableManager variableManager, AQLInterpreter interpreter) {
+        String toolId = this.idProvider.apply(viewGroupTool).toString();
+        List<String> iconURLProvider = this.groupToolIconURLProvider(viewGroupTool, interpreter, variableManager);
+        String selectionDescriptionId = "";
+        // [FRO] Not sure what this is about
+        if (viewGroupTool.getSelectionDescription() != null) {
+            selectionDescriptionId = this.objectService.getId(viewGroupTool.getSelectionDescription());
+        }
+
+        return SingleClickOnGroupTool.newSingleClickOnGroupTool(toolId)
+                .label(viewGroupTool.getName())
+                .iconURL(iconURLProvider)
+                .selectionDescriptionId(selectionDescriptionId)
+                .targetDescriptions(List.of())
+                .appliesToDiagramRoot(false)
+                .build();
     }
 
     private ITool createNodeTool(NodeTool viewNodeTool, boolean appliesToDiagramRoot, VariableManager variableManager, AQLInterpreter interpreter) {
@@ -230,6 +256,26 @@ public class ViewPaletteProvider implements IPaletteProvider {
             }
         }
         return nodePalette;
+    }
+
+    protected Palette getGroupPalette(IEditingContext editingContext, DiagramDescription diagramDescription, org.eclipse.sirius.components.view.diagram.DiagramDescription viewDiagramDescription, List<Object> elementDescriptions, List<ToolSection> extraToolSections, VariableManager variableManager, AQLInterpreter interpreter) {
+        Palette groupPalette = null;
+        var toolFinder = new ToolFinder();
+        // TODO isEmpty or size > 1 ?
+        if (!elementDescriptions.isEmpty()) {
+            // TODO parameter ?
+            String groupPaletteId = "siriusComponents://groupPalette";
+            var tools = new ArrayList<ITool>();
+            tools.addAll(toolFinder.findGroupTools(viewDiagramDescription).stream()
+                    .filter(tool -> this.checkPrecondition(tool, variableManager, interpreter))
+                    .map(tool -> this.createGroupTool(tool, variableManager, interpreter))
+                    .toList());
+            groupPalette = Palette.newPalette(groupPaletteId)
+                    .tools(tools)
+                    .toolSections(List.of())
+                    .build();
+        }
+        return groupPalette;
     }
 
     private ToolSection createToolSection(NodeToolSection toolSection, DiagramDescription diagramDescription, NodeDescription nodeDescription, VariableManager variableManager, AQLInterpreter interpreter) {
@@ -505,6 +551,18 @@ public class ViewPaletteProvider implements IPaletteProvider {
             return result.getStatus().compareTo(Status.WARNING) <= 0 && result.asBoolean().orElse(Boolean.FALSE);
         }
         return true;
+    }
+
+    private List<String> groupToolIconURLProvider(GroupTool groupTool, AQLInterpreter interpreter, VariableManager variableManager) {
+        List<String> iconURL = null;
+        String iconURLsExpression = groupTool.getIconURLsExpression();
+        if(iconURLsExpression == null || iconURLsExpression.isBlank()) {
+            // TODO use proper group tool
+            iconURL = List.of(ViewToolImageProvider.NODE_CREATION_TOOL_ICON);
+        } else {
+            iconURL = this.evaluateListString(interpreter, variableManager, iconURLsExpression);
+        }
+        return iconURL;
     }
 
     private List<String> nodeToolIconURLProvider(NodeTool nodeTool, AQLInterpreter interpreter, VariableManager variableManager) {

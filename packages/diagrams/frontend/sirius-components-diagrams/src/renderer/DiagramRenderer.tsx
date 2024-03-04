@@ -60,6 +60,7 @@ import { useSynchronizeLayoutData } from './layout/useSynchronizeLayoutData';
 import { useMoveChange } from './move/useMoveChange';
 import { DiagramNodeType } from './node/NodeTypes.types';
 import { useNodeType } from './node/useNodeType';
+import { DiagramGroupPalette } from './palette/DiagramGroupPalette';
 import { DiagramPalette } from './palette/DiagramPalette';
 import { useDiagramElementPalette } from './palette/useDiagramElementPalette';
 import { useDiagramPalette } from './palette/useDiagramPalette';
@@ -294,6 +295,7 @@ export const DiagramRenderer = ({ diagramRefreshedEventPayload }: DiagramRendere
         refreshEventPayloadId={diagramRefreshedEventPayload.id}
       />
 
+      <DiagramGroupPalette />
       <DiagramPalette diagramElementId={diagramRefreshedEventPayload.diagram.id} />
       {diagramDescription.debug ? <DebugPanel reactFlowWrapper={ref} /> : null}
       <ConnectorContextualMenu />

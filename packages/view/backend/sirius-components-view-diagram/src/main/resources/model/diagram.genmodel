@@ -138,6 +138,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//DiagramPalette/dropNodeTool"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//DiagramPalette/nodeTools"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//DiagramPalette/toolSections"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//DiagramPalette/groupTools"/>
     </genClasses>
     <genClasses ecoreClass="diagram.ecore#//NodePalette">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//NodePalette/deleteTool"/>
@@ -206,6 +207,10 @@
     </genClasses>
     <genClasses ecoreClass="diagram.ecore#//DropNodeTool">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference diagram.ecore#//DropNodeTool/acceptedNodeTypes"/>
+    </genClasses>
+    <genClasses ecoreClass="diagram.ecore#//GroupTool">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference diagram.ecore#//GroupTool/selectionDescription"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute diagram.ecore#//GroupTool/iconURLsExpression"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
