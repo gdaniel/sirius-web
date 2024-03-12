@@ -40,6 +40,7 @@ import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
 import org.eclipse.sirius.components.view.diagram.FreeFormLayoutStrategyDescription;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.IconLabelNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.ImageNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.LabelEditTool;
@@ -287,6 +288,11 @@ public class DiagramAdapterFactory extends AdapterFactoryImpl {
         @Override
         public Adapter caseDropNodeTool(DropNodeTool object) {
             return DiagramAdapterFactory.this.createDropNodeToolAdapter();
+        }
+
+        @Override
+        public Adapter caseGroupTool(GroupTool object) {
+            return DiagramAdapterFactory.this.createGroupToolAdapter();
         }
 
         @Override
@@ -824,6 +830,20 @@ public class DiagramAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createDropNodeToolAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.eclipse.sirius.components.view.diagram.GroupTool
+     * <em>Group Tool</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+     * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc
+     * -->
+     *
+     * @return the new adapter.
+     * @see org.eclipse.sirius.components.view.diagram.GroupTool
+     * @generated
+     */
+    public Adapter createGroupToolAdapter() {
         return null;
     }
 

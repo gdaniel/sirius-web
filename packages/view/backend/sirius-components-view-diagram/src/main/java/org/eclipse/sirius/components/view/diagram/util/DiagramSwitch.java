@@ -39,6 +39,7 @@ import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeToolSection;
 import org.eclipse.sirius.components.view.diagram.FreeFormLayoutStrategyDescription;
+import org.eclipse.sirius.components.view.diagram.GroupTool;
 import org.eclipse.sirius.components.view.diagram.IconLabelNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.ImageNodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.LabelEditTool;
@@ -442,6 +443,15 @@ public class DiagramSwitch<T> extends Switch<T> {
                 T result = this.caseDropNodeTool(dropNodeTool);
                 if (result == null)
                     result = this.caseTool(dropNodeTool);
+                if (result == null)
+                    result = this.defaultCase(theEObject);
+                return result;
+            }
+            case DiagramPackage.GROUP_TOOL: {
+                GroupTool groupTool = (GroupTool) theEObject;
+                T result = this.caseGroupTool(groupTool);
+                if (result == null)
+                    result = this.caseTool(groupTool);
                 if (result == null)
                     result = this.defaultCase(theEObject);
                 return result;
@@ -972,6 +982,20 @@ public class DiagramSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseDropNodeTool(DropNodeTool object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Group Tool</em>'. <!-- begin-user-doc -->
+     * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
+     *
+     * @param object
+     *            the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Group Tool</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseGroupTool(GroupTool object) {
         return null;
     }
 

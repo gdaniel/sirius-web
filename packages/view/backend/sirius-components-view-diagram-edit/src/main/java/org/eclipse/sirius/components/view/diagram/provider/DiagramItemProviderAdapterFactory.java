@@ -761,6 +761,29 @@ public class DiagramItemProviderAdapterFactory extends DiagramAdapterFactory imp
     }
 
     /**
+     * This keeps track of the one adapter used for all {@link org.eclipse.sirius.components.view.diagram.GroupTool}
+     * instances. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    protected GroupToolItemProvider groupToolItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.eclipse.sirius.components.view.diagram.GroupTool}. <!-- begin-user-doc
+     * --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
+    public Adapter createGroupToolAdapter() {
+        if (this.groupToolItemProvider == null) {
+            this.groupToolItemProvider = new GroupToolItemProvider(this);
+        }
+
+        return this.groupToolItemProvider;
+    }
+
+    /**
      * This returns the root adapter factory that contains this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
@@ -945,6 +968,8 @@ public class DiagramItemProviderAdapterFactory extends DiagramAdapterFactory imp
             this.edgeToolSectionItemProvider.dispose();
         if (this.dropNodeToolItemProvider != null)
             this.dropNodeToolItemProvider.dispose();
+        if (this.groupToolItemProvider != null)
+            this.groupToolItemProvider.dispose();
     }
 
     /**

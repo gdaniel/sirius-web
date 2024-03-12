@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
+import org.eclipse.sirius.components.diagrams.IDiagramElement;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
@@ -364,8 +365,8 @@ public class PapayaService {
 
         this.addMany(componentAwsRds, "components", List.of(componentPostgre));
 
-        createComponentExchangeFromComponentList(eObject, "GraphQL queries and mutations", List.of(componentSiriusWeb, componentDocker, componentAwsEb, componentAws, componentWebBrowser));
-        createComponentExchangeFromComponentList(eObject, "DB operations", List.of(componentSiriusWeb, componentDocker, componentAwsEb, componentAwsRds, componentPostgre));
+        this.createComponentExchangeFromComponentList(eObject, "GraphQL queries and mutations", List.of(componentSiriusWeb, componentDocker, componentAwsEb, componentAws, componentWebBrowser));
+        this.createComponentExchangeFromComponentList(eObject, "DB operations", List.of(componentSiriusWeb, componentDocker, componentAwsEb, componentAwsRds, componentPostgre));
         return eObject;
     }
 
@@ -1003,6 +1004,15 @@ public class PapayaService {
         // @formatter:on
 
         return self;
+    }
+
+    public String callGroupService(EObject self, List<IDiagramElement> selectedViews, List<Object> selectedElements) {
+        System.out.println("Called a group service");
+        System.out.println("Selected Views");
+        System.out.println(selectedViews);
+        System.out.println("Selected Semantic Elements");
+        System.out.println(selectedElements);
+        return "Test";
     }
 
 }
