@@ -49,6 +49,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="urlExression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" eType="#//FetchTreeItemContextMenuEntryKind"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ContributedTreeItemContextMenuEntry"
+      eSuperTypes="#//TreeItemContextMenuEntry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="contributionId" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="FetchTreeItemContextMenuEntryKind">
     <eLiterals name="DOWNLOAD"/>
     <eLiterals name="OPEN" value="1"/>

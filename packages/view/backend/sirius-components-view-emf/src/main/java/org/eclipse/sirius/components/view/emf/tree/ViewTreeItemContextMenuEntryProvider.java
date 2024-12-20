@@ -33,6 +33,7 @@ import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IViewRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.view.emf.ViewRepresentationDescriptionPredicate;
 import org.eclipse.sirius.components.view.emf.api.IViewAQLInterpreterFactory;
+import org.eclipse.sirius.components.view.tree.ContributedTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.FetchTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.SingleClickTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.TreeItemContextMenuEntry;
@@ -83,7 +84,7 @@ public class ViewTreeItemContextMenuEntryProvider implements ITreeItemContextMen
             variableManager.put(TreeDescription.ID, treeItem.getId());
             var semanticTreeItemObject = treeDescription.getTreeItemObjectProvider().apply(variableManager);
             variableManager.put(VariableManager.SELF, semanticTreeItemObject);
-            
+
             return viewTreeDescription.getContextMenuEntries().stream()
                     .filter(viewAction -> this.isValidActionPrecondition(viewAction, variableManager, interpreter))
                     .map(treeItemContextMenuEntry -> this.convertContextAction(treeItemContextMenuEntry, variableManager, interpreter))
@@ -101,6 +102,8 @@ public class ViewTreeItemContextMenuEntryProvider implements ITreeItemContextMen
             result = new org.eclipse.sirius.components.collaborative.trees.dto.SingleClickTreeItemContextMenuEntry(id, label, iconURL);
         } else if (viewTreeItemContextAction instanceof FetchTreeItemContextMenuEntry) {
             result = new org.eclipse.sirius.components.collaborative.trees.dto.FetchTreeItemContextMenuEntry(id, label, iconURL);
+        } else if (viewTreeItemContextAction instanceof ContributedTreeItemContextMenuEntry contributedTreeItemContextMenuEntry) {
+            result = new org.eclipse.sirius.components.collaborative.trees.dto.ContributedTreeItemContextMenuEntry(contributedTreeItemContextMenuEntry.getContributionId(), label, iconURL);
         }
         return result;
     }

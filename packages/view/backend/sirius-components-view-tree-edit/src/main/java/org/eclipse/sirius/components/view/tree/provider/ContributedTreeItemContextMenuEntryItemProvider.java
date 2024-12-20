@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2024 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
- *******************************************************************************/
+ */
 package org.eclipse.sirius.components.view.tree.provider;
 
 import java.util.Collection;
@@ -17,31 +17,27 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.ResourceLocator;
-import org.eclipse.emf.edit.provider.IChildCreationExtender;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
-import org.eclipse.emf.edit.provider.ItemProviderAdapter;
+import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
+import org.eclipse.emf.edit.provider.ViewerNotification;
+import org.eclipse.sirius.components.view.tree.ContributedTreeItemContextMenuEntry;
+import org.eclipse.sirius.components.view.tree.TreePackage;
 
 /**
  * This is the item provider adapter for a
- * {@link org.eclipse.sirius.components.view.tree.TreeItemLabelElementDescription} object. <!-- begin-user-doc --> <!--
- * end-user-doc -->
+ * {@link org.eclipse.sirius.components.view.tree.ContributedTreeItemContextMenuEntry} object. <!-- begin-user-doc -->
+ * <!-- end-user-doc -->
  *
  * @generated
  */
-public class TreeItemLabelElementDescriptionItemProvider extends ItemProviderAdapter
-        implements IEditingDomainItemProvider, IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
+public class ContributedTreeItemContextMenuEntryItemProvider extends TreeItemContextMenuEntryItemProvider {
     /**
      * This constructs an instance from a factory and a notifier. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    public TreeItemLabelElementDescriptionItemProvider(AdapterFactory adapterFactory) {
+    public ContributedTreeItemContextMenuEntryItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -55,8 +51,31 @@ public class TreeItemLabelElementDescriptionItemProvider extends ItemProviderAda
         if (this.itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
+            this.addContributionIdPropertyDescriptor(object);
         }
         return this.itemPropertyDescriptors;
+    }
+
+    /**
+     * This adds a property descriptor for the Contribution Id feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    protected void addContributionIdPropertyDescriptor(Object object) {
+        this.itemPropertyDescriptors.add(this.createItemPropertyDescriptor(((ComposeableAdapterFactory) this.adapterFactory).getRootAdapterFactory(), this.getResourceLocator(),
+                this.getString("_UI_ContributedTreeItemContextMenuEntry_contributionId_feature"),
+                this.getString("_UI_PropertyDescriptor_description", "_UI_ContributedTreeItemContextMenuEntry_contributionId_feature", "_UI_ContributedTreeItemContextMenuEntry_type"),
+                TreePackage.Literals.CONTRIBUTED_TREE_ITEM_CONTEXT_MENU_ENTRY__CONTRIBUTION_ID, true, false, false, ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+    }
+
+    /**
+     * This returns ContributedTreeItemContextMenuEntry.gif. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
+    public Object getImage(Object object) {
+        return this.overlayImage(object, this.getResourceLocator().getImage("full/obj16/ContributedTreeItemContextMenuEntry"));
     }
 
     /**
@@ -76,7 +95,8 @@ public class TreeItemLabelElementDescriptionItemProvider extends ItemProviderAda
      */
     @Override
     public String getText(Object object) {
-        return this.getString("_UI_TreeItemLabelElementDescription_type");
+        String label = ((ContributedTreeItemContextMenuEntry) object).getName();
+        return label == null || label.length() == 0 ? this.getString("_UI_ContributedTreeItemContextMenuEntry_type") : this.getString("_UI_ContributedTreeItemContextMenuEntry_type") + " " + label;
     }
 
     /**
@@ -89,6 +109,12 @@ public class TreeItemLabelElementDescriptionItemProvider extends ItemProviderAda
     @Override
     public void notifyChanged(Notification notification) {
         this.updateChildren(notification);
+
+        switch (notification.getFeatureID(ContributedTreeItemContextMenuEntry.class)) {
+            case TreePackage.CONTRIBUTED_TREE_ITEM_CONTEXT_MENU_ENTRY__CONTRIBUTION_ID:
+                this.fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+                return;
+        }
         super.notifyChanged(notification);
     }
 
@@ -101,16 +127,6 @@ public class TreeItemLabelElementDescriptionItemProvider extends ItemProviderAda
     @Override
     protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
-    }
-
-    /**
-     * Return the resource locator for this item provider's resources. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public ResourceLocator getResourceLocator() {
-        return ((IChildCreationExtender) this.adapterFactory).getResourceLocator();
     }
 
 }

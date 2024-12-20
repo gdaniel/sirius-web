@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.tree.ContributedTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.FetchTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.SingleClickTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.TreeDescription;
@@ -133,6 +134,15 @@ public class TreeSwitch<T> extends Switch<T> {
                     result = this.defaultCase(theEObject);
                 return result;
             }
+            case TreePackage.CONTRIBUTED_TREE_ITEM_CONTEXT_MENU_ENTRY: {
+                ContributedTreeItemContextMenuEntry contributedTreeItemContextMenuEntry = (ContributedTreeItemContextMenuEntry) theEObject;
+                T result = this.caseContributedTreeItemContextMenuEntry(contributedTreeItemContextMenuEntry);
+                if (result == null)
+                    result = this.caseTreeItemContextMenuEntry(contributedTreeItemContextMenuEntry);
+                if (result == null)
+                    result = this.defaultCase(theEObject);
+                return result;
+            }
             default:
                 return this.defaultCase(theEObject);
         }
@@ -240,6 +250,22 @@ public class TreeSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseFetchTreeItemContextMenuEntry(FetchTreeItemContextMenuEntry object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Contributed Tree Item Context Menu
+     * Entry</em>'. <!-- begin-user-doc --> This implementation returns null; returning a non-null result will terminate
+     * the switch. <!-- end-user-doc -->
+     *
+     * @param object
+     *            the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Contributed Tree Item Context Menu
+     *         Entry</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseContributedTreeItemContextMenuEntry(ContributedTreeItemContextMenuEntry object) {
         return null;
     }
 

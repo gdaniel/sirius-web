@@ -21,6 +21,7 @@ export interface TreeItemProps {
   depth: number;
   onExpand: (id: string, depth: number) => void;
   onExpandAll: (treeItem: GQLTreeItem) => void;
+  onExpandedElementChange: (expanded: string[], maxDepth: number) => void;
   readOnly: boolean;
   textToHighlight: string | null;
   textToFilter: string | null;

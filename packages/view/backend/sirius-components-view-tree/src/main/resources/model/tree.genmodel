@@ -55,5 +55,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute tree.ecore#//FetchTreeItemContextMenuEntry/urlExression"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute tree.ecore#//FetchTreeItemContextMenuEntry/kind"/>
     </genClasses>
+    <genClasses ecoreClass="tree.ecore#//ContributedTreeItemContextMenuEntry">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute tree.ecore#//ContributedTreeItemContextMenuEntry/contributionId"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

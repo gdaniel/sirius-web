@@ -10,15 +10,17 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { GQLTreeItem } from '../views/TreeView.types';
+package org.eclipse.sirius.web.application.views.explorer;
 
-export interface TreeItemContextMenuComponentProps {
-  editingContextId: string;
-  treeId: string;
-  item: GQLTreeItem;
-  readOnly: boolean;
-  expandItem: () => void;
-  onExpandedElementChange: (expanded: string[], maxDepth: number) => void;
-  onClose: () => void;
-  key: string;
+/**
+ * Utility class containing constants for the images of Sirius Web's explorer.
+ *
+ * @author gdaniel
+ */
+public class ExplorerImageConstants {
+
+    public static final String IMAGES_ROOT_FOLDER = "/explorer";
+
+    public static final String EXPAND_ALL_SVG = IMAGES_ROOT_FOLDER + "/expandAll.svg";
+
 }

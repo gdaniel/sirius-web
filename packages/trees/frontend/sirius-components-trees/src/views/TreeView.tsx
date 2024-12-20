@@ -12,7 +12,7 @@
  *******************************************************************************/
 import { gql, useLazyQuery } from '@apollo/client';
 import { DataExtension, useData, useMultiToast, useSelection } from '@eclipse-sirius/sirius-components-core';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Tree } from '../trees/Tree';
 import {
   GQLGetExpandAllTreePathData,
@@ -23,7 +23,7 @@ import {
   GQLTreeItem,
   TreeConverter,
   TreeViewProps,
-  TreeViewState,
+  // TreeViewState,
 } from './TreeView.types';
 import { treeViewTreeConverterExtensionPoint } from './TreeViewExtensionPoints';
 
@@ -68,10 +68,10 @@ export const TreeView = ({
   expanded,
   maxDepth,
 }: TreeViewProps) => {
-  const [state, setState] = useState<TreeViewState>({
-    expanded: expanded,
-    maxDepth: maxDepth,
-  });
+  // const [state, setState] = useState<TreeViewState>({
+  //   expanded: expanded,
+  //   maxDepth: maxDepth,
+  // });
   const { selection } = useSelection();
 
   const [getTreePath, { loading: treePathLoading, data: treePathData, error: treePathError }] = useLazyQuery<
@@ -103,7 +103,7 @@ export const TreeView = ({
   useEffect(() => {
     if (!treePathLoading) {
       if (treePathData) {
-        const { expanded, maxDepth } = state;
+        // const { expanded, maxDepth } = state;
         if (treePathData.viewer?.editingContext?.treePath) {
           const { treeItemIdsToExpand, maxDepth: expandedMaxDepth } = treePathData.viewer.editingContext.treePath;
           const newExpanded: string[] = [...expanded];
@@ -113,11 +113,12 @@ export const TreeView = ({
               newExpanded.push(itemToExpand);
             }
           });
-          setState((prevState) => ({
-            ...prevState,
-            expanded: newExpanded,
-            maxDepth: Math.max(expandedMaxDepth, maxDepth),
-          }));
+          onExpandedElementChange(newExpanded, Math.max(expandedMaxDepth, maxDepth));
+          // setState((prevState) => ({
+          //   ...prevState,
+          //   expanded: newExpanded,
+          //   maxDepth: Math.max(expandedMaxDepth, maxDepth),
+          // }));
         }
       }
     }
@@ -126,7 +127,7 @@ export const TreeView = ({
   useEffect(() => {
     if (!expandAllTreePathLoading) {
       if (expandAllTreePathData) {
-        const { expanded, maxDepth } = state;
+        // const { expanded, maxDepth } = state;
         if (expandAllTreePathData.viewer?.editingContext?.expandAllTreePath) {
           const { treeItemIdsToExpand, maxDepth: expandedMaxDepth } =
             expandAllTreePathData.viewer.editingContext.expandAllTreePath;
@@ -137,11 +138,12 @@ export const TreeView = ({
               newExpanded.push(itemToExpand);
             }
           });
-          setState((prevState) => ({
-            ...prevState,
-            expanded: newExpanded,
-            maxDepth: Math.max(expandedMaxDepth, maxDepth),
-          }));
+          onExpandedElementChange(newExpanded, Math.max(expandedMaxDepth, maxDepth));
+          // setState((prevState) => ({
+          //   ...prevState,
+          //   expanded: newExpanded,
+          //   maxDepth: Math.max(expandedMaxDepth, maxDepth),
+          // }));
         }
       }
     }
@@ -160,27 +162,30 @@ export const TreeView = ({
   }, [treePathError]);
 
   const onExpand = (id: string, depth: number) => {
-    const { expanded, maxDepth } = state;
+    // const { expanded, maxDepth } = state;
 
     if (expanded.includes(id)) {
       const newExpanded = [...expanded];
       newExpanded.splice(newExpanded.indexOf(id), 1);
 
-      setState((prevState) => ({
-        ...prevState,
-        expanded: newExpanded,
-        maxDepth: Math.max(maxDepth, depth),
-      }));
+      onExpandedElementChange(newExpanded, Math.max(maxDepth, depth));
+      // setState((prevState) => ({
+      //   ...prevState,
+      //   expanded: newExpanded,
+      //   maxDepth: Math.max(maxDepth, depth),
+      // }));
     } else {
-      setState((prevState) => ({ ...prevState, expanded: [...expanded, id], maxDepth: Math.max(maxDepth, depth) }));
+      onExpandedElementChange([...expanded, id], Math.max(maxDepth, depth));
+      // setState((prevState) => ({ ...prevState, expanded: [...expanded, id], maxDepth: Math.max(maxDepth, depth) }));
     }
   };
 
-  useEffect(() => {
-    onExpandedElementChange(state.expanded, state.maxDepth);
-  }, [state.expanded, state.maxDepth]);
+  // useEffect(() => {
+  //   onExpandedElementChange(state.expanded, state.maxDepth);
+  // }, [state.expanded, state.maxDepth]);
 
   const onExpandAll = (treeItem: GQLTreeItem) => {
+    console.log('???????????');
     const variables: GQLGetExpandAllTreePathVariables = {
       editingContextId,
       treeId: tree.id,
@@ -203,6 +208,7 @@ export const TreeView = ({
         tree={convertedTree}
         onExpand={onExpand}
         onExpandAll={onExpandAll}
+        onExpandedElementChange={onExpandedElementChange}
         readOnly={readOnly}
         enableMultiSelection={enableMultiSelection}
         markedItemIds={markedItemIds}

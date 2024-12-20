@@ -10,15 +10,14 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { GQLTreeItem } from '../views/TreeView.types';
+package org.eclipse.sirius.components.collaborative.trees.dto;
 
-export interface TreeItemContextMenuComponentProps {
-  editingContextId: string;
-  treeId: string;
-  item: GQLTreeItem;
-  readOnly: boolean;
-  expandItem: () => void;
-  onExpandedElementChange: (expanded: string[], maxDepth: number) => void;
-  onClose: () => void;
-  key: string;
-}
+import java.util.List;
+
+/**
+ * Used to represent a contributed entry inside a context menu of a tree item.
+ *
+ * @author gdaniel
+ */
+public record ContributedTreeItemContextMenuEntry(String id, String label, List<String> iconURL) implements ITreeItemContextMenuEntry { }
+

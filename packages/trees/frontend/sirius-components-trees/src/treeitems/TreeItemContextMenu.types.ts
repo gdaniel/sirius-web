@@ -21,6 +21,7 @@ export interface TreeItemContextMenuProps {
   depth: number;
   onExpand: (id: string, depth: number) => void;
   onExpandAll: (treeItem: GQLTreeItem) => void;
+  onExpandedElementChange: (expanded: string[], maxDepth: number) => void;
   enterEditingMode: () => void;
   onClose: () => void;
 }

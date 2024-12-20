@@ -20,7 +20,6 @@ import {
 } from '@eclipse-sirius/sirius-components-core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import UnfoldMore from '@mui/icons-material/UnfoldMore';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
@@ -44,6 +43,7 @@ import {
 import { TreeItemContextMenuComponentProps } from './TreeItemContextMenuEntry.types';
 import { treeItemContextMenuEntryExtensionPoint } from './TreeItemContextMenuEntryExtensionPoints';
 import { useContextMenuEntries } from './useContextMenuEntries';
+import { GQLTreeItem } from '../views/TreeView.types';
 
 const deleteTreeItemMutation = gql`
   mutation deleteTreeItem($input: DeleteTreeItemInput!) {
@@ -103,6 +103,7 @@ export const TreeItemContextMenu = ({
   depth,
   onExpand,
   onExpandAll,
+  onExpandedElementChange,
   enterEditingMode,
   onClose,
 }: TreeItemContextMenuProps) => {
@@ -228,12 +229,17 @@ export const TreeItemContextMenu = ({
     }
   }, [invokeSingleClickLoading, invokeSingleClickError, invokeSingleClickData]);
 
-  const invokeContextMenuEntry = (menuEntry: TreeItemContextMenuEntry) => {
+  const invokeContextMenuEntry = (menuEntry: TreeItemContextMenuEntry, item: GQLTreeItem) => {
     if (menuEntry.__typename === 'FetchTreeItemContextMenuEntry') {
       invokeFetch(menuEntry.id);
     } else if (menuEntry.__typename === 'SingleClickTreeItemContextMenuEntry') {
       invokeSingleClick(menuEntry.id);
       onClose();
+    } else if (menuEntry.__typename === 'ContributedTreeItemContextMenuEntry') {
+      if (menuEntry.id === 'expand-all') {
+        onExpandAll(item);
+        onClose();
+      }
     }
   };
 
@@ -257,12 +263,13 @@ export const TreeItemContextMenu = ({
             item={item}
             readOnly={readOnly}
             onClose={onClose}
+            onExpandedElementChange={onExpandedElementChange}
             expandItem={expandItem}
             key={index.toString()}
             treeId={treeId}
           />
         ))}
-        {item.hasChildren ? (
+        {/* {item.hasChildren ? (
           <MenuItem
             key="expand-all"
             data-testid="expand-all"
@@ -277,7 +284,7 @@ export const TreeItemContextMenu = ({
             </ListItemIcon>
             <ListItemText primary="Expand all" />
           </MenuItem>
-        ) : null}
+        ) : null} */}
         {item.editable ? (
           <MenuItem
             key="rename"
@@ -302,7 +309,7 @@ export const TreeItemContextMenu = ({
         {state.menuEntries.map((entry) => (
           <MenuItem
             key={entry.id}
-            onClick={(_) => invokeContextMenuEntry(entry)}
+            onClick={(_) => invokeContextMenuEntry(entry, item)}
             data-testid={`context-menu-entry-${entry.label}`}
             disabled={readOnly}
             aria-disabled>

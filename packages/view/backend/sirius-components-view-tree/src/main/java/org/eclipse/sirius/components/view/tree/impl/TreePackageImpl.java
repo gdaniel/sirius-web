@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.sirius.components.view.ViewPackage;
+import org.eclipse.sirius.components.view.tree.ContributedTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.FetchTreeItemContextMenuEntry;
 import org.eclipse.sirius.components.view.tree.FetchTreeItemContextMenuEntryKind;
 import org.eclipse.sirius.components.view.tree.SingleClickTreeItemContextMenuEntry;
@@ -91,6 +92,13 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
      *
      * @generated
      */
+    private EClass contributedTreeItemContextMenuEntryEClass = null;
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
     private EEnum fetchTreeItemContextMenuEntryKindEEnum = null;
 
     /**
@@ -115,15 +123,17 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
     private boolean isInitialized = false;
 
     /**
-     * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package URI value.
+     * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry
+     * EPackage.Registry} by the package package URI value.
      * <p>
-     * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or returns the registered package, if one
-     * already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also
+     * performs initialization of the package, or returns the registered package, if one already exists. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
      *
-     * @generated
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.eclipse.sirius.components.view.tree.TreePackage#eNS_URI
      * @see #init()
+     * @generated
      */
     private TreePackageImpl() {
         super(eNS_URI, TreeFactory.eINSTANCE);
@@ -133,13 +143,14 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
      *
      * <p>
-     * This method is used to initialize {@link TreePackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should simply access that field to obtain the
-     * package. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * This method is used to initialize {@link TreePackage#eINSTANCE} when that field is accessed. Clients should not
+     * invoke it directly. Instead, they should simply access that field to obtain the package. <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      *
-     * @generated
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
+     * @generated
      */
     public static TreePackage init() {
         if (isInited)
@@ -494,6 +505,26 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
      * @generated
      */
     @Override
+    public EClass getContributedTreeItemContextMenuEntry() {
+        return this.contributedTreeItemContextMenuEntryEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
+    public EAttribute getContributedTreeItemContextMenuEntry_ContributionId() {
+        return (EAttribute) this.contributedTreeItemContextMenuEntryEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    @Override
     public EEnum getFetchTreeItemContextMenuEntryKind() {
         return this.fetchTreeItemContextMenuEntryKindEEnum;
     }
@@ -509,7 +540,8 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
     }
 
     /**
-     * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but
+     * its first. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
@@ -558,12 +590,16 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
         this.createEAttribute(this.fetchTreeItemContextMenuEntryEClass, FETCH_TREE_ITEM_CONTEXT_MENU_ENTRY__URL_EXRESSION);
         this.createEAttribute(this.fetchTreeItemContextMenuEntryEClass, FETCH_TREE_ITEM_CONTEXT_MENU_ENTRY__KIND);
 
+        this.contributedTreeItemContextMenuEntryEClass = this.createEClass(CONTRIBUTED_TREE_ITEM_CONTEXT_MENU_ENTRY);
+        this.createEAttribute(this.contributedTreeItemContextMenuEntryEClass, CONTRIBUTED_TREE_ITEM_CONTEXT_MENU_ENTRY__CONTRIBUTION_ID);
+
         // Create enums
         this.fetchTreeItemContextMenuEntryKindEEnum = this.createEEnum(FETCH_TREE_ITEM_CONTEXT_MENU_ENTRY_KIND);
     }
 
     /**
-     * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
+     * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
@@ -589,6 +625,7 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
         this.treeItemLabelFragmentDescriptionEClass.getESuperTypes().add(this.getTreeItemLabelElementDescription());
         this.singleClickTreeItemContextMenuEntryEClass.getESuperTypes().add(this.getTreeItemContextMenuEntry());
         this.fetchTreeItemContextMenuEntryEClass.getESuperTypes().add(this.getTreeItemContextMenuEntry());
+        this.contributedTreeItemContextMenuEntryEClass.getESuperTypes().add(this.getTreeItemContextMenuEntry());
 
         // Initialize classes, features, and operations; add parameters
         this.initEClass(this.treeDescriptionEClass, TreeDescription.class, "TreeDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -657,6 +694,11 @@ public class TreePackageImpl extends EPackageImpl implements TreePackage {
                 !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         this.initEAttribute(this.getFetchTreeItemContextMenuEntry_Kind(), this.getFetchTreeItemContextMenuEntryKind(), "kind", null, 0, 1, FetchTreeItemContextMenuEntry.class, !IS_TRANSIENT,
                 !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        this.initEClass(this.contributedTreeItemContextMenuEntryEClass, ContributedTreeItemContextMenuEntry.class, "ContributedTreeItemContextMenuEntry", !IS_ABSTRACT, !IS_INTERFACE,
+                IS_GENERATED_INSTANCE_CLASS);
+        this.initEAttribute(this.getContributedTreeItemContextMenuEntry_ContributionId(), theViewPackage.getIdentifier(), "contributionId", null, 0, 1, ContributedTreeItemContextMenuEntry.class,
+                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         this.initEEnum(this.fetchTreeItemContextMenuEntryKindEEnum, FetchTreeItemContextMenuEntryKind.class, "FetchTreeItemContextMenuEntryKind");

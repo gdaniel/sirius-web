@@ -19,6 +19,7 @@ export interface TreeItemActionProps {
   depth: number;
   onExpand: (id: string, depth: number) => void;
   onExpandAll: (treeItem: GQLTreeItem) => void;
+  onExpandedElementChange: (expanded: string[], maxDepth: number) => void;
   onEnterEditingMode: () => void;
   readOnly: boolean;
   isHovered: boolean;

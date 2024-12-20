@@ -172,6 +172,12 @@ enum FetchTreeItemContextMenuEntryKind {
   OPEN
 }
 
+type ContributedTreeItemContextMenuEntry implements TreeItemContextMenuEntry {
+  id: ID!
+  label: String!
+  iconURL: [String!]!
+}
+
 input InvokeSingleClickTreeItemContextMenuEntryInput {
   id: ID!
   editingContextId: ID!

@@ -22,6 +22,7 @@ import org.eclipse.sirius.components.core.api.IEditingContextProcessor;
 import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
 import org.eclipse.sirius.components.emf.services.IDAdapter;
 import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
+import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.view.TextStyleDescription;
 import org.eclipse.sirius.components.view.TextStylePalette;
 import org.eclipse.sirius.components.view.View;
@@ -36,6 +37,7 @@ import org.eclipse.sirius.components.view.tree.TreeItemLabelElementDescription;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.sirius.web.application.studio.services.api.IStudioCapableEditingContextPredicate;
+import org.eclipse.sirius.web.application.views.explorer.ExplorerImageConstants;
 import org.springframework.stereotype.Service;
 
 /**
@@ -250,6 +252,13 @@ public class DomainViewTreeDescriptionProvider implements IEditingContextProcess
                 .body(callService.build())
                 .build();
 
-        return List.of(helpMenuEntry, toggleAbstractMenuEntry);
+        var expandAllMenuEntry = new TreeBuilders().newContributedTreeItemContextMenuEntry()
+                .labelExpression("Expand all")
+                .preconditionExpression("aql:" + TreeItem.SELECTED_TREE_ITEM + ".isHasChildren()")
+                .contributionId("expand-all")
+                .iconURLExpression(ExplorerImageConstants.EXPAND_ALL_SVG)
+                .build();
+
+        return List.of(expandAllMenuEntry, helpMenuEntry, toggleAbstractMenuEntry);
     }
 }

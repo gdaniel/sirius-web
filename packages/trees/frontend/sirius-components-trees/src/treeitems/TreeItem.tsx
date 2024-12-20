@@ -116,6 +116,7 @@ export const TreeItem = ({
   depth,
   onExpand,
   onExpandAll,
+  onExpandedElementChange,
   readOnly,
   textToHighlight,
   textToFilter,
@@ -176,6 +177,7 @@ export const TreeItem = ({
                 depth={depth + 1}
                 onExpand={onExpand}
                 onExpandAll={onExpandAll}
+                onExpandedElementChange={onExpandedElementChange}
                 enableMultiSelection={enableMultiSelection}
                 readOnly={readOnly}
                 textToHighlight={textToHighlight}
@@ -397,6 +399,7 @@ export const TreeItem = ({
                     depth: depth,
                     onExpand: onExpand,
                     onExpandAll: onExpandAll,
+                    onExpandedElementChange: onExpandedElementChange,
                     readOnly: readOnly,
                     onEnterEditingMode: enterEditingMode,
                     isHovered: state.partHovered === 'item',
@@ -409,6 +412,7 @@ export const TreeItem = ({
                     depth={depth}
                     onExpand={onExpand}
                     onExpandAll={onExpandAll}
+                    onExpandedElementChange={onExpandedElementChange}
                     readOnly={readOnly}
                     onEnterEditingMode={enterEditingMode}
                     isHovered={state.partHovered === 'item'}
