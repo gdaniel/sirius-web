@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Obeo.
+ * Copyright (c) 2019, 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -26,8 +26,9 @@ const useTreeStyle = makeStyles()((_) => ({
 export const Tree = ({
   editingContextId,
   tree,
-  onExpand,
-  onExpandAll,
+  expanded,
+  maxDepth,
+  onExpandedElementChange,
   readOnly,
   enableMultiSelection = true,
   textToHighlight,
@@ -61,7 +62,9 @@ export const Tree = ({
           switch (event.key) {
             case 'ArrowLeft':
               if (hasChildren && isExpanded) {
-                onExpand(id, dataset.depth);
+                const newExpanded = [...expanded];
+                newExpanded.splice(newExpanded.indexOf(id), 1);
+                onExpandedElementChange(newExpanded, Math.max(dataset.depth, maxDepth));
               } else if (index > 0) {
                 const parentDepth = (dataset.depth - 1).toString();
                 let positionFromParent = 0;
@@ -73,7 +76,7 @@ export const Tree = ({
               break;
             case 'ArrowRight':
               if (hasChildren && !isExpanded) {
-                onExpand(id, dataset.depth);
+                onExpandedElementChange([...expanded, id], Math.max(dataset.depth, maxDepth));
               } else if (index < treeItemDomElements.length - 1) {
                 treeItemDomElements[index + 1].click();
               }
@@ -103,7 +106,7 @@ export const Tree = ({
       };
     }
     return null;
-  }, [treeElement, onExpand]);
+  }, [treeElement, onExpandedElementChange]);
 
   return (
     <>
@@ -117,8 +120,9 @@ export const Tree = ({
                 item={item}
                 itemIndex={index}
                 depth={1}
-                onExpand={onExpand}
-                onExpandAll={onExpandAll}
+                expanded={expanded}
+                maxDepth={maxDepth}
+                onExpandedElementChange={onExpandedElementChange}
                 enableMultiSelection={enableMultiSelection}
                 readOnly={readOnly}
                 textToHighlight={textToHighlight}

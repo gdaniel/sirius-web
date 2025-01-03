@@ -30,6 +30,7 @@ import org.eclipse.sirius.components.collaborative.diagrams.DiagramServices;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
+import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -64,7 +65,8 @@ public class ViewConverter implements IViewConverter {
         this.javaServiceProviders = new ArrayList<>();
         this.javaServiceProviders.addAll(Objects.requireNonNull(javaServiceProviders));
         IServiceProvider nodeServiceProvider = (IReadOnlyQueryEnvironment queryEnvironment, boolean forWorkspace) -> ServiceUtils.getReceiverServices(null, Node.class).stream().toList();
-        this.javaServiceProviders.add((View view) -> List.of(CanonicalServices.class, DiagramServices.class, nodeServiceProvider.getClass()));
+        IServiceProvider treeItemServiceProvider = (IReadOnlyQueryEnvironment queryEnvironment, boolean forWorkspace) -> ServiceUtils.getReceiverServices(null, TreeItem.class).stream().toList();
+        this.javaServiceProviders.add((View view) -> List.of(CanonicalServices.class, DiagramServices.class, nodeServiceProvider.getClass(), treeItemServiceProvider.getClass()));
         this.representationDescriptionConverters = Objects.requireNonNull(representationDescriptionConverters);
         this.applicationContext = Objects.requireNonNull(applicationContext);
         this.dialogDescriptionConverts = Objects.requireNonNull(dialogDescriptionConverts);
