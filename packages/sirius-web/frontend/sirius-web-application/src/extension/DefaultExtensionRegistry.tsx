@@ -82,6 +82,13 @@ import { ProjectSettingTabContribution } from '../views/project-settings/Project
 import { projectSettingsTabExtensionPoint } from '../views/project-settings/ProjectSettingsViewExtensionPoints';
 import { ellipseNodeStyleDocumentTransform } from './EllipseNodeDocumentTransform';
 import { referenceWidgetDocumentTransform } from './ReferenceWidgetDocumentTransform';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import { navigationBarMenuEntryExtensionPoint } from '../navigationBar/NavigationBarMenuExtensionPoints';
+import { NavigationBarMenuItemProps } from '../navigationBar/NavigationBarMenu.types';
+import FolderIcon from '@mui/icons-material/Folder';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const getType = (representation: RepresentationMetadata): string | null => {
   const query = representation.kind.substring(representation.kind.indexOf('?') + 1, representation.kind.length);
@@ -198,6 +205,46 @@ export const OmniboxButtonContribution = ({}: NavigationBarRightContributionProp
 defaultExtensionRegistry.addComponent(navigationBarRightContributionExtensionPoint, {
   identifier: `siriusweb_${navigationBarRightContributionExtensionPoint.identifier}_omnibox`,
   Component: OmniboxButtonContribution,
+});
+
+/*******************************************************************************
+ *
+ * NavigationBar menu contributions
+ *
+ * Used to register actions in the navigation bar menu
+ *
+ *******************************************************************************/
+
+export const ProjectsButtonContribution = ({}: NavigationBarMenuItemProps) => {
+  return (
+    <MenuItem component="a" href="/">
+      <ListItemIcon>
+        <FolderIcon />
+      </ListItemIcon>
+      <ListItemText primary="Projects" />
+    </MenuItem>
+  );
+};
+
+defaultExtensionRegistry.addComponent(navigationBarMenuEntryExtensionPoint, {
+  identifier: `siriusweb_${navigationBarMenuEntryExtensionPoint.identifier}_projects`,
+  Component: ProjectsButtonContribution,
+});
+
+export const LibrariesButtonContribution = ({}: NavigationBarMenuItemProps) => {
+  return (
+    <MenuItem component="a" href="/libraries">
+      <ListItemIcon>
+        <FileCopyIcon />
+      </ListItemIcon>
+      <ListItemText primary="Libraries" />
+    </MenuItem>
+  );
+};
+
+defaultExtensionRegistry.addComponent(navigationBarMenuEntryExtensionPoint, {
+  identifier: `siriusweb_${navigationBarMenuEntryExtensionPoint.identifier}_libraries`,
+  Component: LibrariesButtonContribution,
 });
 
 /*******************************************************************************

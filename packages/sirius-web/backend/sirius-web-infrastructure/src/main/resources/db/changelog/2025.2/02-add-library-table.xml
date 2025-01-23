@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2025 Obeo.
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ https://www.eclipse.org/legal/epl-2.0/
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  ~
+  ~ Contributors:
+  ~     Obeo - initial API and implementation
+  -->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="01-add-library-table" author="gdaniel">
+        <createTable tableName="library">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="project_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+			<column name="name" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="version" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_on" type="TIMESTAMPTZ">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_modified_on" type="TIMESTAMPTZ">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createTable tableName="library_dependency">
+            <column name="library_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+			<column name="dependency_library_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+		<addForeignKeyConstraint baseTableName="library_dependency" baseColumnNames="library_id" constraintName="fk_library_id" referencedTableName="library" referencedColumnNames="id" onDelete="CASCADE"/>
+		<addForeignKeyConstraint baseTableName="library_dependency" baseColumnNames="dependency_library_id" constraintName="fk_dependency_library_id" referencedTableName="library" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="library" baseColumnNames="project_id" constraintName="fk_library_project_id" referencedTableName="project" referencedColumnNames="id" onDelete="CASCADE"/>
+		<addPrimaryKey tableName="library_dependency" columnNames="library_id,dependency_library_id" />
+		<addUniqueConstraint tableName="library" columnNames="project_id,name,version" />
+    </changeSet>
+</databaseChangeLog>

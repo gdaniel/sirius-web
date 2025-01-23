@@ -264,3 +264,44 @@ INSERT INTO representation_content (
   'none',
   '0'
 );
+
+-- Sample Libraries
+INSERT INTO library (
+  id,
+  project_id,
+  name,
+  content,
+  version,
+  description,
+  created_on,
+  last_modified_on
+) VALUES (
+  '0d8da4b1-c905-467c-aedd-2345c014debc',
+  '99d336a2-3049-439a-8853-b104ffb22653',
+  'Library1',
+  'content',
+  '1.0.0',
+  'initial version',
+  '2025-01-15 16:02:22.417758+00',
+  '2025-01-15 16:02:22.417758+00'
+),
+(
+  '52cbc52e-6e88-4d9f-8fb1-a8fa75b6637d',
+  '99d336a2-3049-439a-8853-b104ffb22653',
+  'Library1',
+  'content',
+  '2.0.0',
+  'v2',
+  '2025-01-15 16:02:29.838474+00',
+  '2025-01-15 16:02:29.838474+00'
+),
+(
+  'e44e93db-0744-4aa2-ad9a-35ababf88898',
+  '99d336a2-3049-439a-8853-b104ffb22653',
+  'Library2',
+  'content',
+  '0.0.1',
+  'work in progress',
+  '2025-01-15 16:02:30.303284+00',
+  '2025-01-15 16:02:30.303284+00'
+);

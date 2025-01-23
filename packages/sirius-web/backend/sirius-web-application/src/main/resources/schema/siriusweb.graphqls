@@ -1,6 +1,7 @@
 extend type Viewer {
   project(projectId: ID!): Project
   projects(after: String, before: String, first: Int, last: Int): ViewerProjectsConnection!
+  libraries(page: Int!, limit: Int!): ViewerLibrariesConnection!
   projectTemplates(page: Int!, limit: Int!): ViewerProjectTemplatesConnection!
 }
 
@@ -40,6 +41,24 @@ type ProjectTemplate {
   imageURL: String!
 }
 
+type ViewerLibrariesConnection {
+  edges: [ViewerLibrariesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ViewerLibrariesEdge {
+  node: Library!
+}
+
+type Library {
+  id: ID!
+  projectId: String!
+  name: String!
+  content: String!
+  version: String!
+  description: String!
+}
+
 extend type Mutation {
   createProject(input: CreateProjectInput!): CreateProjectPayload!
   createProjectFromTemplate(input: CreateProjectFromTemplateInput!): CreateProjectFromTemplatePayload!
@@ -48,6 +67,7 @@ extend type Mutation {
   renameRepresentation(input: RenameRepresentationInput!): RenameRepresentationPayload!
   deleteRepresentation(input: DeleteRepresentationInput!): DeleteRepresentationPayload!
   uploadProject(input: UploadProjectInput!): UploadProjectPayload!
+  publishLibraries(input: PublishLibrariesInput!): PublishLibrariesPayload!
 }
 
 input CreateProjectInput {
@@ -148,4 +168,18 @@ union UploadProjectPayload = ErrorPayload | UploadProjectSuccessPayload
 type UploadProjectSuccessPayload {
   id: ID!
   project: Project!
+}
+
+input PublishLibrariesInput {
+  id: ID!
+  projectId: ID!
+  version: String!
+  description: String!
+}
+
+union PublishLibrariesPayload = ErrorPayload | PublishLibrariesSuccessPayload
+
+type PublishLibrariesSuccessPayload {
+  id: ID!
+  libraries: [Library!]!
 }

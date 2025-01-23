@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 Obeo.
+ * Copyright (c) 2023, 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import { EditProjectView } from '../views/edit-project/EditProjectView';
 import { ErrorView } from '../views/error/ErrorView';
 import { NewProjectView } from '../views/new-project/NewProjectView';
 import { ProjectBrowser } from '../views/project-browser/ProjectBrowser';
+import { LibraryBrowser } from '../views/library-browser/LibraryBrowser';
 import { ProjectSettingsView } from '../views/project-settings/ProjectSettingsView';
 import { UploadProjectView } from '../views/upload-project/UploadProjectView';
 import { routerExtensionPoint } from './RouterExtensionPoints';
@@ -33,6 +34,7 @@ export const Router = () => {
       <Route path="/new/project/*" element={<NewProjectView />} ErrorBoundary={ErrorBoundary} />
       <Route path="/upload/project/*" element={<UploadProjectView />} ErrorBoundary={ErrorBoundary} />
       <Route path="/projects" element={<ProjectBrowser />} ErrorBoundary={ErrorBoundary} />
+      <Route path="/libraries" element={<LibraryBrowser />} ErrorBoundary={ErrorBoundary} />
       <Route
         path="/projects/:projectId/edit/:representationId?/*"
         element={<EditProjectView />}

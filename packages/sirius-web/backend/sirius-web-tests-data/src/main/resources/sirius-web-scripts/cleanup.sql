@@ -6,3 +6,5 @@ DELETE FROM representation_metadata;
 DELETE FROM image;
 DELETE FROM nature;
 DELETE FROM project;
+DELETE FROM library;
+DELETE FROM library_dependency;
