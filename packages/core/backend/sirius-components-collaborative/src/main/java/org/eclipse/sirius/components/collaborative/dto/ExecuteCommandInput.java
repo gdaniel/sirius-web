@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024, 2025 Obeo.
+ * Copyright (c) 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,24 +10,17 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.sirius.components.collaborative.dto;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.sirius.components.core.api.IInput;
 
 /**
- * The input for the get omnibox commands query.
+ * The input object of the execute command mutation.
  *
- * @author gcoutable
+ * @author gdaniel
  */
-public record GetOmniboxCommandsInput(UUID id, List<OmniboxContextEntry> contextEntries, String query) implements IInput {
-    public GetOmniboxCommandsInput {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(contextEntries);
-        Objects.requireNonNull(query);
-    }
+public record ExecuteCommandInput(UUID id, String editingContextId, String commandId) implements IInput {
+
 }

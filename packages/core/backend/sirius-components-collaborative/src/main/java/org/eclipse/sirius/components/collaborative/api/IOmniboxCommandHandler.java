@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024, 2025 Obeo.
+ * Copyright (c) 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,19 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+package org.eclipse.sirius.components.collaborative.api;
 
-export { type OmniboxAction, type OmniboxCommandDialogComponentProps, type OmniboxContextEntry } from './Omnibox.types';
-export * from './OmniboxButton';
-export * from './OmniboxExtensionPoints';
-export * from './OmniboxExtensionPoints.types';
-export * from './OmniboxProvider';
-export * from './useOmniboxCommands';
-export * from './useOmniboxCommands.types';
+import org.eclipse.sirius.components.collaborative.dto.ExecuteCommandInput;
+import org.eclipse.sirius.components.core.api.IPayload;
+
+/**
+ * Processes the input event.
+ *
+ * @author gdaniel
+ */
+public interface IOmniboxCommandHandler {
+
+    boolean canHandle(ExecuteCommandInput input);
+
+    IPayload handle(ExecuteCommandInput input);
+}

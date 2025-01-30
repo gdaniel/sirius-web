@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024, 2025 Obeo.
+ * Copyright (c) 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,22 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+package org.eclipse.sirius.web.application.project.services;
 
-export { type OmniboxAction, type OmniboxCommandDialogComponentProps, type OmniboxContextEntry } from './Omnibox.types';
-export * from './OmniboxButton';
-export * from './OmniboxExtensionPoints';
-export * from './OmniboxExtensionPoints.types';
-export * from './OmniboxProvider';
-export * from './useOmniboxCommands';
-export * from './useOmniboxCommands.types';
+import java.util.List;
+
+import org.eclipse.sirius.components.core.api.IImagePathService;
+import org.springframework.stereotype.Service;
+
+/**
+ * Used to allow the access to omnibox images.
+ *
+ * @author gdaniel
+ */
+@Service
+public class OmniboxImagePathService implements IImagePathService {
+    @Override
+    public List<String> getPaths() {
+        return List.of("/omnibox");
+    }
+}

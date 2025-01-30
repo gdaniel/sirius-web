@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024 Obeo.
+ * Copyright (c) 2024, 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ export interface OmniboxProps {
 export interface OmniboxState {
   contextEntries: OmniboxContextEntry[];
   queryHasChanged: boolean;
+  customDialog: React.ComponentType<OmniboxCommandDialogComponentProps> | null;
 }
 
 export interface OmniboxContextEntry {
@@ -28,11 +29,15 @@ export interface OmniboxContextEntry {
   kind: OmniboxContextKind;
 }
 
-export type OmniboxContextKind = 'EditingContext';
+export type OmniboxContextKind = 'EditingContext' | 'Search';
 
 export interface OmniboxAction {
   id: string;
   icon: JSX.Element;
   label: string;
   kind: string;
+}
+
+export interface OmniboxCommandDialogComponentProps {
+  onClose: () => void;
 }

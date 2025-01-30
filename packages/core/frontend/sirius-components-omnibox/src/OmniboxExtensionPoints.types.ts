@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024, 2025 Obeo.
+ * Copyright (c) 2024 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,9 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { OmniboxAction, OmniboxCommandDialogComponentProps } from './Omnibox.types';
 
-export { type OmniboxAction, type OmniboxCommandDialogComponentProps, type OmniboxContextEntry } from './Omnibox.types';
-export * from './OmniboxButton';
-export * from './OmniboxExtensionPoints';
-export * from './OmniboxExtensionPoints.types';
-export * from './OmniboxProvider';
-export * from './useOmniboxCommands';
-export * from './useOmniboxCommands.types';
+export interface OmniboxCommandDialogContribution {
+  canHandle: (action: OmniboxAction) => boolean;
+  component: React.ComponentType<OmniboxCommandDialogComponentProps>;
+}

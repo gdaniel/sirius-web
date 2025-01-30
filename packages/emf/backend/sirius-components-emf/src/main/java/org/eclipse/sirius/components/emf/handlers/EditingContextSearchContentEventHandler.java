@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024 Obeo.
+ * Copyright (c) 2024, 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,7 +49,7 @@ import reactor.core.publisher.Sinks;
  * @author gcoutable
  */
 @Service
-public class EditingContextOmniboxCommandsEventHandler implements IEditingContextEventHandler {
+public class EditingContextSearchContentEventHandler implements IEditingContextEventHandler {
 
     private final IObjectService objectService;
 
@@ -57,7 +57,7 @@ public class EditingContextOmniboxCommandsEventHandler implements IEditingContex
 
     private final Counter counter;
 
-    public EditingContextOmniboxCommandsEventHandler(IObjectService objectService, ICollaborativeMessageService messageService, MeterRegistry meterRegistry) {
+    public EditingContextSearchContentEventHandler(IObjectService objectService, ICollaborativeMessageService messageService, MeterRegistry meterRegistry) {
         this.objectService = Objects.requireNonNull(objectService);
         this.messageService = Objects.requireNonNull(messageService);
 
@@ -113,7 +113,7 @@ public class EditingContextOmniboxCommandsEventHandler implements IEditingContex
             while (iterator.hasNext()) {
                 Notifier notifier = iterator.next();
                 var adapter = editingDomain.getAdapterFactory().adapt(notifier, IItemLabelProvider.class);
-                if (adapter instanceof IItemLabelProvider itemLabelProvider && itemLabelProvider.getText(notifier).contains(query)) {
+                if (adapter instanceof IItemLabelProvider itemLabelProvider && itemLabelProvider.getText(notifier).toLowerCase().contains(query.toLowerCase())) {
                     results.add(notifier);
                 }
             }

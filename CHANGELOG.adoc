@@ -96,6 +96,7 @@ The new endpoints are:
 - https://github.com/eclipse-sirius/sirius-web/issues/4440[#4440] [sirius-web] Add the representation description name in details view
 - https://github.com/eclipse-sirius/sirius-web/issues/4425[#4425] [table] Add new table cell widget description for textarea
 - https://github.com/eclipse-sirius/sirius-web/issues/4462[#4462] [sirius-web] Add support for library publication and visualization.
+- https://github.com/eclipse-sirius/sirius-web/issues/4428[#4428] [core] Allow the command palette to run regular commands.
 
 
 === Improvements

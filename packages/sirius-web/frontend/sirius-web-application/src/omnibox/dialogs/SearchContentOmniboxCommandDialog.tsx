@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024, 2025 Obeo.
+ * Copyright (c) 2025 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,17 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { IconOverlay, useData } from '@eclipse-sirius/sirius-components-core';
+import { makeStyles } from 'tss-react/mui';
+import {
+  OmniboxCommandDialogComponentProps,
+  GQLGetOmniboxCommandsQueryVariables,
+  OmniboxAction,
+} from '@eclipse-sirius/sirius-components-omnibox';
+import { IconOverlay, useSelection } from '@eclipse-sirius/sirius-components-core';
+import { useOmniboxCommands } from '@eclipse-sirius/sirius-components-omnibox';
+import { useRef, useState } from 'react';
+import { SearchContentState } from './SearchContentOmniboxCommandDialog.types';
+
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -25,14 +35,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { useRef, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
-import { OmniboxAction, OmniboxProps, OmniboxState } from './Omnibox.types';
-import { useOmniboxCommands } from './useOmniboxCommands';
-import { useExecuteOmniboxCommand } from './useExecuteOmniboxCommand';
-import { GQLGetOmniboxCommandsQueryVariables } from './useOmniboxCommands.types';
-import { omniboxCommandDialogContributionExtensionPoint } from './OmniboxExtensionPoints';
-import { OmniboxCommandDialogContribution } from './OmniboxExtensionPoints.types';
+import { useCurrentProject } from '../../views/edit-project/useCurrentProject';
 
 const useOmniboxStyles = makeStyles()((theme) => ({
   omnibox: {
@@ -69,33 +72,34 @@ const useOmniboxStyles = makeStyles()((theme) => ({
   },
 }));
 
-export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) => {
-  const [state, setState] = useState<OmniboxState>({
-    contextEntries: initialContextEntries,
+export const SearchContentOmniboxCommandDialog = ({ onClose }: OmniboxCommandDialogComponentProps) => {
+  const [state, setState] = useState<SearchContentState>({
     queryHasChanged: true,
-    customDialog: null,
   });
 
+  const { setSelection } = useSelection();
   const { getOmniboxCommands, loading, data } = useOmniboxCommands();
-  const { executeOmniboxCommand } = useExecuteOmniboxCommand();
-
-  const { data: omniboxCommandDialogContributions } = useData<OmniboxCommandDialogContribution[]>(
-    omniboxCommandDialogContributionExtensionPoint
-  );
+  const { project } = useCurrentProject();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   const onChange = () => {
     if (!state.queryHasChanged) {
-      setState((prevState) => ({ ...prevState, queryHasChanged: true }));
+      setState((prevState) => ({
+        ...prevState,
+        queryHasChanged: true,
+      }));
     }
   };
 
   const sendQuery = (query: string) => {
-    setState((prevState) => ({ ...prevState, queryHasChanged: false }));
+    setState((prevState) => ({
+      ...prevState,
+      queryHasChanged: false,
+    }));
     const variables: GQLGetOmniboxCommandsQueryVariables = {
-      contextEntries: state.contextEntries.map((entry) => ({ id: entry.id, kind: entry.kind })),
+      contextEntries: [{ id: project.currentEditingContext.id, kind: 'Search' }],
       query,
     };
     getOmniboxCommands({ variables });
@@ -138,18 +142,8 @@ export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) 
   };
 
   const handleOnActionClick = (action: OmniboxAction) => {
-    const dialogs = omniboxCommandDialogContributions
-      .filter((contribution) => contribution.canHandle(action))
-      .map((contribution) => contribution.component);
-    if (dialogs.length > 0) {
-      setState((prevState) => ({
-        ...prevState,
-        customDialog: dialogs[0] ?? null,
-      }));
-    } else {
-      executeOmniboxCommand(initialContextEntries[0]?.id ?? '', action.id);
-      onClose();
-    }
+    setSelection({ entries: [{ id: action.id, kind: action.kind }] });
+    onClose();
   };
 
   let listItems: JSX.Element[] = [];
@@ -165,7 +159,7 @@ export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) 
   if (!loading && data) {
     listItems = [
       <ListItem key={'no-result-key'}>
-        <ListItemText data-testid="omnibox-no-result">No result</ListItemText>
+        <ListItemText data-testid="search-no-result">No result</ListItemText>
       </ListItem>,
     ];
     const omniboxCommands = data.viewer.omniboxCommands.edges.map((edge) => edge.node);
@@ -195,9 +189,17 @@ export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) 
   }
 
   const { classes } = useOmniboxStyles();
-
-  const dialogContent = (
-    <>
+  return (
+    <Dialog
+      open
+      onClose={onClose}
+      fullWidth
+      PaperProps={{
+        className: classes.omniboxPaper,
+      }}
+      className={classes.omnibox}
+      scroll="paper"
+      data-testid="search">
       <DialogTitle component="div" className={classes.omniboxInputArea}>
         <ChevronRightIcon className={classes.omniboxIcon} />
         <FormControl variant="standard" className={classes.omniboxFormControl}>
@@ -205,7 +207,7 @@ export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) 
             inputRef={inputRef}
             onChange={() => onChange()}
             onKeyDown={handleKeyDown}
-            placeholder="Select a Command..."
+            placeholder="Hit 'Enter' to search an element..."
             disableUnderline
             autoFocus
             fullWidth
@@ -231,25 +233,6 @@ export const Omnibox = ({ open, initialContextEntries, onClose }: OmniboxProps) 
           {listItems}
         </List>
       </DialogContent>
-    </>
-  );
-
-  const OmniboxCustomDialog = state.customDialog;
-
-  return OmniboxCustomDialog ? (
-    <OmniboxCustomDialog onClose={onClose} />
-  ) : (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      PaperProps={{
-        className: classes.omniboxPaper,
-      }}
-      className={classes.omnibox}
-      scroll="paper"
-      data-testid="omnibox">
-      {dialogContent}
     </Dialog>
   );
 };

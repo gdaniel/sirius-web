@@ -89,6 +89,13 @@ import { navigationBarMenuEntryExtensionPoint } from '../navigationBar/Navigatio
 import { NavigationBarMenuItemProps } from '../navigationBar/NavigationBarMenu.types';
 import FolderIcon from '@mui/icons-material/Folder';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import {
+  omniboxCommandDialogContributionExtensionPoint,
+  OmniboxCommandDialogContribution,
+  OmniboxAction,
+} from '@eclipse-sirius/sirius-components-omnibox';
+import { PublishStudioOmniboxCommandDialog } from '../omnibox/dialogs/PublishStudioOmniboxCommandDialog';
+import { SearchContentOmniboxCommandDialog } from '../omnibox/dialogs/SearchContentOmniboxCommandDialog';
 
 const getType = (representation: RepresentationMetadata): string | null => {
   const query = representation.kind.substring(representation.kind.indexOf('?') + 1, representation.kind.length);
@@ -435,3 +442,31 @@ defaultExtensionRegistry.addComponent(projectContextMenuEntryExtensionPoint, {
 });
 
 export { defaultExtensionRegistry };
+
+/*******************************************************************************
+ *
+ * Omnibox command dialogs
+ *
+ * Used to register additional dialogs for omnibox commands
+ *
+ *******************************************************************************/
+
+const omniboxDialogContributions: OmniboxCommandDialogContribution[] = [
+  {
+    canHandle: (action: OmniboxAction) => {
+      return action.id === 'publishStudio';
+    },
+    component: PublishStudioOmniboxCommandDialog,
+  },
+  {
+    canHandle: (action: OmniboxAction) => {
+      return action.id === 'searchContent';
+    },
+    component: SearchContentOmniboxCommandDialog,
+  },
+];
+
+defaultExtensionRegistry.putData<OmniboxCommandDialogContribution[]>(omniboxCommandDialogContributionExtensionPoint, {
+  identifier: `siriusweb_${omniboxCommandDialogContributionExtensionPoint.identifier}`,
+  data: omniboxDialogContributions,
+});
