@@ -21,6 +21,7 @@ import org.eclipse.sirius.components.core.api.IEditingContextRepresentationDescr
 import org.eclipse.sirius.components.emf.services.EditingContextCrossReferenceAdapter;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
+import org.eclipse.sirius.web.application.editingcontext.services.api.IEditingContextDependencyLoader;
 import org.eclipse.sirius.web.application.editingcontext.services.api.IEditingContextLoader;
 import org.eclipse.sirius.web.application.editingcontext.services.api.IEditingContextMigrationParticipantPredicate;
 import org.eclipse.sirius.web.application.editingcontext.services.api.IResourceLoader;
@@ -41,22 +42,27 @@ public class EditingContextLoader implements IEditingContextLoader {
 
     private final IResourceLoader resourceLoader;
 
+    private final IEditingContextDependencyLoader editingContextDependencyLoader;
+
     private final List<IEditingContextRepresentationDescriptionProvider> representationDescriptionProviders;
 
     private final List<IEditingContextProcessor> editingContextProcessors;
 
     private final List<IEditingContextMigrationParticipantPredicate> migrationParticipantPredicates;
 
-    public EditingContextLoader(IResourceLoader resourceLoader, List<IEditingContextRepresentationDescriptionProvider> representationDescriptionProviders, List<IEditingContextProcessor> editingContextProcessors, List<IEditingContextMigrationParticipantPredicate> migrationParticipantPredicates) {
+    public EditingContextLoader(IResourceLoader resourceLoader, IEditingContextDependencyLoader editingContextDependencyLoader, List<IEditingContextRepresentationDescriptionProvider> representationDescriptionProviders, List<IEditingContextProcessor> editingContextProcessors, List<IEditingContextMigrationParticipantPredicate> migrationParticipantPredicates) {
         this.resourceLoader = Objects.requireNonNull(resourceLoader);
+        this.editingContextDependencyLoader = Objects.requireNonNull(editingContextDependencyLoader);
         this.representationDescriptionProviders = Objects.requireNonNull(representationDescriptionProviders);
         this.editingContextProcessors = Objects.requireNonNull(editingContextProcessors);
         this.migrationParticipantPredicates = Objects.requireNonNull(migrationParticipantPredicates);
     }
 
+    @Override
     public void load(EditingContext editingContext, SemanticData semanticData) {
         this.editingContextProcessors.forEach(processor -> processor.preProcess(editingContext));
 
+        this.editingContextDependencyLoader.loadDependencies(editingContext);
         this.loadSemanticData(editingContext, semanticData);
 
         this.representationDescriptionProviders.forEach(representationDescriptionProvider -> {

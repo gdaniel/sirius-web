@@ -15,15 +15,30 @@ package org.eclipse.sirius.web.application.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.sirius.components.core.api.IEditingContextPersistenceService;
 import org.eclipse.sirius.components.core.api.IEditingContextSearchService;
+import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.web.AbstractIntegrationTests;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
+import org.eclipse.sirius.web.application.editingcontext.services.api.IEditingContextDependencyLoader;
+import org.eclipse.sirius.web.application.object.services.api.IReadOnlyObjectPredicate;
+import org.eclipse.sirius.web.data.PapayaIdentifiers;
 import org.eclipse.sirius.web.data.TestIdentifiers;
+import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
+import org.eclipse.sirius.web.domain.boundedcontexts.library.services.api.ILibrarySearchService;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api.ISemanticDataUpdateService;
+import org.eclipse.sirius.web.domain.services.Success;
+import org.eclipse.sirius.web.papaya.services.library.InitializeStandardLibraryEvent;
+import org.eclipse.sirius.web.papaya.services.library.api.IStandardLibrarySemanticDataInitializer;
 import org.eclipse.sirius.web.tests.data.GivenSiriusWebServer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sbegaudeau
  */
 @Transactional
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EditingContextLifecycleTests extends AbstractIntegrationTests {
     @Autowired
@@ -44,6 +60,30 @@ public class EditingContextLifecycleTests extends AbstractIntegrationTests {
 
     @Autowired
     private IEditingContextPersistenceService editingContextPersistenceService;
+
+    @Autowired
+    private ILibrarySearchService librarySearchService;
+
+    @Autowired
+    private ISemanticDataUpdateService semanticDataUpdateService;
+
+    @Autowired
+    private ILabelService labelService;
+
+    @Autowired
+    private IReadOnlyObjectPredicate readOnlyObjectPredicate;
+
+    @Autowired
+    private IStandardLibrarySemanticDataInitializer standardLibrarySemanticDataInitializer;
+
+    @BeforeEach
+    public void beforeEach() {
+        var initializeJavaStandardLibraryEvent = new InitializeStandardLibraryEvent(UUID.randomUUID(), "java", "Java Standard Library", "17.0.0", "The standard library of the Java programming language");
+        this.standardLibrarySemanticDataInitializer.initializeStandardLibrary(initializeJavaStandardLibraryEvent);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+    }
 
     @Test
     @GivenSiriusWebServer
@@ -113,6 +153,36 @@ public class EditingContextLifecycleTests extends AbstractIntegrationTests {
 
             EPackage ePackage = (EPackage) rootEObject;
             assertThat(ePackage.getName()).isEqualTo("Sample Updated");
+        }
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given semantic data with a dependency, when the loading is performed, then the semantic data are available in the editing context")
+    public void givenSemanticDataWithDependencyWhenLoadingIsPerformedThenSemanticDataAvailableInEditingContext() {
+        Optional<Library> library = this.librarySearchService.findByNamespaceAndNameAndVersion("java", "Java Standard Library", "17.0.0");
+        assertThat(library).isPresent();
+        var result = this.semanticDataUpdateService.addDependency(null, PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID, library.get().getSemanticData().getId());
+        assertThat(result).isInstanceOf(Success.class);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        var optionalEditingContext = this.editingContextSearchService.findById(PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString());
+        assertThat(optionalEditingContext).isPresent();
+
+        var editingContext = optionalEditingContext.get();
+        assertThat(editingContext.getId()).isEqualTo(PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString());
+        if (editingContext instanceof EditingContext siriusWebEditingContext) {
+            var resourceSet = siriusWebEditingContext.getDomain().getResourceSet();
+            assertThat(resourceSet.getResources())
+                .hasSize(3)
+                .anyMatch(resource ->
+                    this.labelService.getLabel(resource).equals("Java Standard Library")
+                    && Objects.equals(resource.getURI().scheme(), IEditingContextDependencyLoader.DEPENDENCY_SCHEME)
+                    && this.readOnlyObjectPredicate.test(resource));
+        } else {
+            fail("Invalid editing context");
         }
     }
 }

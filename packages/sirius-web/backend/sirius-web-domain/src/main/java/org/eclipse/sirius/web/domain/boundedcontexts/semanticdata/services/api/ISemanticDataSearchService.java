@@ -14,6 +14,7 @@ package org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticData;
@@ -30,4 +31,6 @@ public interface ISemanticDataSearchService {
     Optional<SemanticData> findById(UUID id);
 
     boolean existsById(UUID id);
+
+    Set<SemanticData> findAllTransitiveSemanticDataById(UUID id);
 }

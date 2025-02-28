@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.web.domain.boundedcontexts.AbstractValidatingAggregateRoot;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataCreatedEvent;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataDependencyAddedEvent;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataDependencyRemovedEvent;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataUpdatedEvent;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -75,6 +77,27 @@ public class SemanticData extends AbstractValidatingAggregateRoot<SemanticData> 
 
     public List<SemanticDataDependency> getDependencies() {
         return Collections.unmodifiableList(this.dependencies);
+    }
+
+    public void addDependency(ICause cause, UUID semanticDataId) {
+        var newDependency = new SemanticDataDependency(AggregateReference.to(semanticDataId));
+        this.dependencies.add(newDependency);
+        this.lastModifiedOn = Instant.now();
+
+        this.registerEvent(new SemanticDataDependencyAddedEvent(UUID.randomUUID(), this.lastModifiedOn, cause, this, newDependency));
+
+    }
+
+    public void removeDependency(ICause cause, UUID semanticDataId) {
+        this.dependencies.stream()
+                .filter(dependency -> dependency.dependencySemanticDataId().getId().equals(semanticDataId))
+                .findFirst()
+                .ifPresent(dependency -> {
+                    this.dependencies.remove(dependency);
+                    this.lastModifiedOn = Instant.now();
+
+                    this.registerEvent(new SemanticDataDependencyRemovedEvent(UUID.randomUUID(), this.lastModifiedOn, cause, this, dependency));
+                });
     }
 
     public Instant getCreatedOn() {
@@ -149,6 +172,20 @@ public class SemanticData extends AbstractValidatingAggregateRoot<SemanticData> 
 
     public static Builder newSemanticData() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = false;
+        if (obj instanceof SemanticData semanticData) {
+            result = Objects.equals(this.id, semanticData.getId());
+        }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
     }
 
     /**
