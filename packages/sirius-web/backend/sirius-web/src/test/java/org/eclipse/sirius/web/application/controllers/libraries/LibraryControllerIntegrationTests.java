@@ -18,20 +18,37 @@ import com.jayway.jsonpath.JsonPath;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
+import org.eclipse.sirius.components.core.api.ErrorPayload;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IInput;
+import org.eclipse.sirius.components.core.api.IPayload;
 import org.eclipse.sirius.components.core.api.SuccessPayload;
+import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
+import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
+import org.eclipse.sirius.components.graphql.tests.ExecuteEditingContextFunctionInput;
+import org.eclipse.sirius.components.graphql.tests.api.IExecuteEditingContextFunctionRunner;
 import org.eclipse.sirius.web.AbstractIntegrationTests;
+import org.eclipse.sirius.web.application.editingcontext.services.api.IEditingContextDependencyLoader;
+import org.eclipse.sirius.web.application.library.dto.ImportLibrariesInput;
 import org.eclipse.sirius.web.application.library.dto.PublishLibrariesInput;
+import org.eclipse.sirius.web.data.PapayaIdentifiers;
 import org.eclipse.sirius.web.data.StudioIdentifiers;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.services.api.ILibrarySearchService;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticDataDependency;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api.ISemanticDataSearchService;
+import org.eclipse.sirius.web.papaya.services.library.InitializeStandardLibraryEvent;
+import org.eclipse.sirius.web.papaya.services.library.api.IStandardLibrarySemanticDataInitializer;
 import org.eclipse.sirius.web.tests.data.GivenSiriusWebServer;
+import org.eclipse.sirius.web.tests.graphql.ImportLibrariesMutationRunner;
 import org.eclipse.sirius.web.tests.graphql.LibrariesQueryRunner;
 import org.eclipse.sirius.web.tests.graphql.PublishLibrariesMutationRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +59,12 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Used to get libraries from the GraphQL API.
+ * Integration tests of the library controllers.
  *
  * @author gdaniel
  */
 @Transactional
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LibraryControllerIntegrationTests extends AbstractIntegrationTests {
 
@@ -57,10 +75,28 @@ public class LibraryControllerIntegrationTests extends AbstractIntegrationTests 
     private PublishLibrariesMutationRunner publishLibrariesMutationRunner;
 
     @Autowired
+    private ImportLibrariesMutationRunner importLibrariesMutationRunner;
+
+    @Autowired
     private ILibrarySearchService librarySearchService;
 
     @Autowired
     private ISemanticDataSearchService semanticDataSearchService;
+
+    @Autowired
+    private IExecuteEditingContextFunctionRunner executeEditingContextFunctionRunner;
+
+    @Autowired
+    private IStandardLibrarySemanticDataInitializer standardLibrarySemanticDataInitializer;
+
+    @BeforeEach
+    public void beforeEach() {
+        var initializeJavaStandardLibraryEvent = new InitializeStandardLibraryEvent(UUID.randomUUID(), "java", "Java Standard Library", "17.0.0", "The standard library of the Java programming language");
+        this.standardLibrarySemanticDataInitializer.initializeStandardLibrary(initializeJavaStandardLibraryEvent);
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+    }
 
     @Test
     @GivenSiriusWebServer
@@ -139,6 +175,72 @@ public class LibraryControllerIntegrationTests extends AbstractIntegrationTests 
         Optional<Library> rootDiagram1DescriptionLibrary = this.librarySearchService.findByNamespaceAndNameAndVersion(StudioIdentifiers.SAMPLE_STUDIO_PROJECT, "Root Diagram1", version);
         assertThat(rootDiagram1DescriptionLibrary).isPresent();
         this.assertThatLibraryHasCorrectDescriptionAndDependencies(rootDiagram1DescriptionLibrary.get(), description, List.of(buckLibrary, sharedComponentsLibrary));
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project, when a library is imported as a copy, then the editing context contains the copy of the library")
+    public void givenProjectWhenLibraryIsImportedAsCopyThenEditingContextContainsTheLibraryCopy() {
+        Optional<Library> library = this.librarySearchService.findByNamespaceAndNameAndVersion("java", "Java Standard Library", "17.0.0");
+        assertThat(library).isPresent();
+        var importLibrariesInput = new ImportLibrariesInput(UUID.randomUUID(), PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString(), "copy", List.of(library.get().getId().toString()));
+        this.importLibrariesMutationRunner.run(importLibrariesInput);
+
+        BiFunction<IEditingContext, IInput, IPayload> function = (editingContext, executeEditingContextFunctionInput) -> {
+            if (editingContext instanceof IEMFEditingContext emfEditingContext) {
+                assertThat(emfEditingContext.getDomain().getResourceSet().getResources())
+                    .anyMatch(resource -> {
+                        Optional<String> optName = resource.eAdapters().stream()
+                                .filter(ResourceMetadataAdapter.class::isInstance)
+                                .map(ResourceMetadataAdapter.class::cast)
+                                .map(ResourceMetadataAdapter::getName)
+                                .findFirst();
+                        return optName.isPresent()
+                                && optName.get().equals("Java Standard Library")
+                                // The library should be in a RESOURCE_SCHEME resource: it has been copied and is a regular Sirius resource.
+                                && Objects.equals(resource.getURI().scheme(), IEMFEditingContext.RESOURCE_SCHEME);
+                    });
+                return new SuccessPayload(executeEditingContextFunctionInput.id());
+            }
+            return new ErrorPayload(executeEditingContextFunctionInput.id(), "Invalid editing context");
+        };
+
+        var input = new ExecuteEditingContextFunctionInput(UUID.randomUUID(), PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString(), function);
+        var payload = this.executeEditingContextFunctionRunner.execute(input).block();
+        assertThat(payload).isInstanceOf(SuccessPayload.class);
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project, when a library is imported as a reference, then the editing context contains the reference to the library")
+    public void givenProjectWhenLibraryIsImportedAsReferenceThenEditingContextContainsTheLibraryDependency() {
+        Optional<Library> library = this.librarySearchService.findByNamespaceAndNameAndVersion("java", "Java Standard Library", "17.0.0");
+        assertThat(library).isPresent();
+        var importLibrariesInput = new ImportLibrariesInput(UUID.randomUUID(), PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString(), "import", List.of(library.get().getId().toString()));
+        this.importLibrariesMutationRunner.run(importLibrariesInput);
+
+        BiFunction<IEditingContext, IInput, IPayload> function = (editingContext, executeEditingContextFunctionInput) -> {
+            if (editingContext instanceof IEMFEditingContext emfEditingContext) {
+                assertThat(emfEditingContext.getDomain().getResourceSet().getResources())
+                    .anyMatch(resource -> {
+                        Optional<String> optName = resource.eAdapters().stream()
+                                .filter(ResourceMetadataAdapter.class::isInstance)
+                                .map(ResourceMetadataAdapter.class::cast)
+                                .map(ResourceMetadataAdapter::getName)
+                                .findFirst();
+                        return optName.isPresent()
+                                && optName.get().equals("Java Standard Library")
+                                // The library should be in a DEPENDENCY_SCHEME resource: it is referenced by the editing context.
+                                && Objects.equals(resource.getURI().scheme(), IEditingContextDependencyLoader.DEPENDENCY_SCHEME);
+                    });
+                return new SuccessPayload(executeEditingContextFunctionInput.id());
+            }
+            return new ErrorPayload(executeEditingContextFunctionInput.id(), "Invalid editing context");
+        };
+
+        var input = new ExecuteEditingContextFunctionInput(UUID.randomUUID(), PapayaIdentifiers.PAPAYA_EDITING_CONTEXT_ID.toString(), function);
+        var payload = this.executeEditingContextFunctionRunner.execute(input).block();
+        assertThat(payload).isInstanceOf(SuccessPayload.class);
     }
 
     private void assertThatLibraryHasCorrectDescriptionAndDependencies(Library library, String description, List<Library> dependencyLibraries) {

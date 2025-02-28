@@ -12,8 +12,10 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.domain.boundedcontexts.library.services;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.repositories.ILibraryRepository;
@@ -49,5 +51,15 @@ public class LibrarySearchService implements ILibrarySearchService {
     @Override
     public Optional<Library> findByNamespaceAndNameAndVersion(String namespace, String name, String version) {
         return this.libraryRepository.findByNamespaceAndNameAndVersion(namespace, name, version);
+    }
+
+    @Override
+    public Optional<Library> findById(UUID id) {
+        return this.libraryRepository.findById(id);
+    }
+
+    @Override
+    public List<Library> findAllById(Iterable<UUID> ids) {
+        return this.libraryRepository.findAllById(ids);
     }
 }

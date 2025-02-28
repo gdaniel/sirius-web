@@ -12,7 +12,9 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.domain.boundedcontexts.library.services.api;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
 import org.springframework.data.domain.Page;
@@ -30,4 +32,8 @@ public interface ILibrarySearchService {
     boolean existsByNamespaceAndNameAndVersion(String namespace, String name, String version);
 
     Optional<Library> findByNamespaceAndNameAndVersion(String namespace, String name, String version);
+
+    Optional<Library> findById(UUID id);
+
+    List<Library> findAllById(Iterable<UUID> ids);
 }

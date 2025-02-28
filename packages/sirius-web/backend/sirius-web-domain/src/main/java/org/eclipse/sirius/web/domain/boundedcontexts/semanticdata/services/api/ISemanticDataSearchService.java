@@ -33,4 +33,6 @@ public interface ISemanticDataSearchService {
     boolean existsById(UUID id);
 
     Set<SemanticData> findAllTransitiveSemanticDataById(UUID id);
+
+    Optional<SemanticData> findByDocumentId(UUID documentId);
 }

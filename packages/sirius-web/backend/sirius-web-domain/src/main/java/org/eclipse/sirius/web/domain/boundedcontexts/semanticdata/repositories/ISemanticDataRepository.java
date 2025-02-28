@@ -13,6 +13,7 @@
 package org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.repositories;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticData;
@@ -38,4 +39,14 @@ public interface ISemanticDataRepository extends ListPagingAndSortingRepository<
         GROUP BY semanticData.id
         """)
     List<SemanticData> findAllByDomains(List<String> domainUris);
+
+    @Query("""
+            SELECT semanticData.*
+            FROM semantic_data semanticData
+            JOIN document
+            ON semanticData.id = document.semantic_data_id
+            WHERE document.id = :documentId
+            GROUP BY semanticData.id
+            """)
+    Optional<SemanticData> findByDocumentId(UUID documentId);
 }

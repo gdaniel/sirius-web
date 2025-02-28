@@ -65,6 +65,11 @@ public class SemanticDataSearchService implements ISemanticDataSearchService {
         return collectedSemanticData;
     }
 
+    @Override
+    public Optional<SemanticData> findByDocumentId(UUID documentId) {
+        return this.semanticDataRepository.findByDocumentId(documentId);
+    }
+
     private void collectTransitiveSemanticData(SemanticData semanticData, Set<SemanticData> collectedSemanticData) {
         semanticData.getDependencies().stream()
             .map(SemanticDataDependency::dependencySemanticDataId)
